@@ -1,0 +1,53 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c5db0878519e47743b3ee576ae5a5c8a, type: 3}
+  m_Name: RD_SecondAttack
+  m_EditorClassIdentifier: 
+  <Name>k__BackingField: Second Attack
+  <Description>k__BackingField: Very second
+  <Icon>k__BackingField: {fileID: 10917, guid: 0000000000000000f000000000000000, type: 0}
+  <BG>k__BackingField: {fileID: 0}
+  <TurnCost>k__BackingField: 1
+  <EnergyCost>k__BackingField: 1
+  <MaxDistanceByCharacter>k__BackingField: 3
+  <EnergyGain>k__BackingField: 1
+  <Prefab>k__BackingField: {fileID: 3854179437147671246, guid: 91aea69e5fc1d4f489fc4dd35d8ac4de, type: 3}
+  <TargetingMode>k__BackingField:
+    rid: 3402815904749453377
+  <Action>k__BackingField:
+    rid: 6961100094785192200
+  references:
+    version: 2
+    RefIds:
+    - rid: 3402815904749453377
+      type: {class: SelectCellOnPatternMode, ns: Echobay.ActionContext, asm: Assembly-CSharp}
+      data:
+        _patternData: {fileID: 11400000, guid: 430f3c0b6aa8d35479bdf108c3389c7d, type: 2}
+        _targetCellCapacity: 2
+    - rid: 6961100094785192200
+      type: {class: AlternatingAttackAction, ns: Echobay.CardSystem, asm: Assembly-CSharp}
+      data:
+        AnimationCommands:
+        - _parameterName: Attack
+          _type: 0
+          _intValue: 0
+          _floatValue: 0
+          _boolValue: 0
+        - _parameterName: AttackID
+          _type: 1
+          _intValue: 1
+          _floatValue: 0
+          _boolValue: 0
+        _damageAmount: 15
+        _attackVFXPrefab: {fileID: 4208843959898764096, guid: 822f15fb62cbfd444b09772e08764a1f, type: 3}
+        _vfxAmount: 4
+        _delayBetweenAttacks: 1

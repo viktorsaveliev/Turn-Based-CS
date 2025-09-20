@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c568ccc94a041d345926a2b7c8d6974b, type: 3}
+  m_Name: VisualDataConfig
+  m_EditorClassIdentifier: 
+  <PointEnterOutlineColor>k__BackingField: {r: 0, g: 0, b: 0, a: 0}
+  <SelectedOutlineColor>k__BackingField: {r: 0, g: 0, b: 0, a: 0}
+  _outlineSizeOnEnter: 2.25
+  _outlineSizeOnSelect: 2.25
+  <CellSelectedColor>k__BackingField: {r: 1, g: 1, b: 1, a: 0.050980393}
+  <CellUnavailableColor>k__BackingField: {r: 1, g: 1, b: 1, a: 0.019607844}
+  <CellRegularColor>k__BackingField: {r: 1, g: 1, b: 1, a: 0.039215688}
+  <CellOccupiedColor>k__BackingField: {r: 0.5, g: 0.5, b: 0.5, a: 0.050980393}
+  <CellTargetedColor>k__BackingField: {r: 1, g: 0, b: 0, a: 0.050980393}

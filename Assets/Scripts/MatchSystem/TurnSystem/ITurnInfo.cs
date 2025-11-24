@@ -6,7 +6,7 @@ namespace Echobay.MatchSystem.TurnSystem
 {
     public interface ITurnInfo
     {
-        public event Action<Player> OnTurnGained;
-        public event Action<Player> OnTurnLost;
+        public event Action<MatchPlayer> OnTurnGained;
+        public event Action<MatchPlayer> OnTurnLost;
     }
 }

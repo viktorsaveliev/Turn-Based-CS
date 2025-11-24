@@ -9,8 +9,17 @@ namespace Echobay.ActionContext
         {
             if (ContextLinks.ActionController.SelectedUnit == null && cell.IsOccupied)
             {
-                ContextLinks.ActionController.SelectUnit(cell.Occupant);
-                ContextLinks.ActionController.SetContext(new MoveTargetMode());
+                if (cell.Occupant is IUnitCellOccupant unit)
+                {
+                    if (ContextLinks.Player.Data.TeamID != unit.TeamID)
+                    {
+                        Debug.Log("It is enemy unit");
+                        return;
+                    }
+
+                    ContextLinks.ActionController.SelectUnit(unit);
+                    ContextLinks.ActionController.SetSelectionMode(new MoveTargetMode());
+                }
             }
         }
 

@@ -1,6 +1,8 @@
 using Echobay.FightSystem;
 using Echobay.FightSystem.StatusEffects;
 using Echobay.GridSystem;
+using Echobay.PlayerSystem;
+using Sirenix.OdinInspector;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -9,26 +11,31 @@ using UnityEngine;
 
 namespace Echobay.UnitSystem
 {
-    public abstract class Unit : StatusEffectableObject, IUnit, ICellMoveableOccupant, IDamageable
+    public abstract class Unit : StatusEffectableObject, IUnit, IUnitCellOccupant, IDamageable
     {
         public GridCell CurrentCell { get; set; }
 
         public HealthSystem Health { get; private set; }
+        public MatchPlayer Owner { get; private set; }
 
         public event Action OnPathCompleted;
 
-        [field: SerializeField] public Animator Animator { get; private set; }
+        [field: SerializeField, ReadOnly] public int UnitID { get; private set; }
         [field: SerializeField] public int TeamID { get; private set; }
+        [field: SerializeField] public Animator Animator { get; private set; }
 
         [SerializeField] private UnitData _data;
 
         private readonly HashSet<IUnitSystem> _systems = new();
         private Coroutine _moveRoutine;
 
-        public virtual void Init(int teamID)
+        public virtual void Init(MatchPlayer owner, int unitID)
         {
+            Owner = owner;
+            UnitID = unitID;
+            TeamID = owner.Data.TeamID;
+
             Health = new HealthSystem(_data.MaxHealth);
-            TeamID = teamID;
         }
 
         public void MoveAlongPath(List<GridCell> path)

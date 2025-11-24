@@ -8,31 +8,34 @@ using Zenject;
 
 namespace Echobay.ActionContext
 {
-    public class ActionController : IInitializable, IDisposable
+    public class ActionController : IDisposable
     {
         public event Action OnUnitSelected;
         public event Action OnActionExecuted;
+        public event Action<TargetSelectionMode> OnSelectionModeChanged;
 
-        public TargetSelectionMode CurrentContext { get; private set; }
-        public ICellOccupant SelectedUnit { get; private set; }
+        public event Action<IUnitCellOccupant, GridCell> OnMoveRequested;
+        public event Action<CardData, ExecuteActionContext> OnActionRequested;
+
+        public TargetSelectionMode CurrentSelectionMode { get; private set; }
+        public IUnitCellOccupant SelectedUnit { get; private set; }
         public ICardAction SelectedAction { get; set; }
         public bool IsConfirmState { get; private set; }
+        public bool IsActionExecuting { get; private set; }
         public Card SelectedCard { get; private set; }
 
-        private readonly IPathFinder _pathFinder;
-        private readonly SelectCellMode _selectCellContext = new();
+        private readonly SelectCellMode _selectCellMode = new();
         private readonly ActionContextLinks _contextLinks;
         private readonly CardController _cardController;
 
         [Inject]
-        public ActionController(IPathFinder pathFinder, ActionContextLinks actionContextLinks, CardController cardController) 
+        public ActionController(ActionContextLinks actionContextLinks, CardController cardController) 
         {
-            _pathFinder = pathFinder;
             _contextLinks = actionContextLinks;
             _cardController = cardController;
         }
 
-        public void Initialize()
+        public void Init()
         {
             _contextLinks.Init(this);
 
@@ -44,7 +47,7 @@ namespace Echobay.ActionContext
             _cardController.OnCardSelected += OnCardSelected;
             _cardController.OnCardDeselected += OnCardDeselected;
 
-            SetContext(_selectCellContext);
+            BlockActions();
         }
 
         public void Dispose()
@@ -63,34 +66,40 @@ namespace Echobay.ActionContext
             _cardController.OnCardDeselected -= OnCardDeselected;
         }
 
-        public void SelectUnit(ICellOccupant cellOccupant)
+        public void SelectUnit(IUnitCellOccupant cellOccupant)
         {
             SelectedUnit = cellOccupant;
             OnUnitSelected?.Invoke();
         }
 
-        public void SetContext(TargetSelectionMode actionContext)
+        public void SetSelectionMode(TargetSelectionMode actionContext)
         {
-            if (CurrentContext != null)
+            if (CurrentSelectionMode != null)
             {
-                CurrentContext.OnCompleted -= OnTargetSelectionCompleted;
-                CurrentContext.Exit();
+                CurrentSelectionMode.OnCompleted -= OnTargetSelectionCompleted;
+                CurrentSelectionMode.Exit();
             }
             
-            CurrentContext = actionContext;
-            CurrentContext.OnCompleted += OnTargetSelectionCompleted;
+            CurrentSelectionMode = actionContext;
+            CurrentSelectionMode.OnCompleted += OnTargetSelectionCompleted;
 
-            Debug.Log($"Context set to: {CurrentContext.GetType().Name}");
+            Debug.Log($"Context set to: {CurrentSelectionMode.GetType().Name}");
 
-            CurrentContext.Enter(_contextLinks);
+            CurrentSelectionMode.Enter(_contextLinks);
+
+            OnSelectionModeChanged?.Invoke(CurrentSelectionMode);
         }
+
+        public void SelecttCellAction() => SetSelectionMode(_selectCellMode); 
+        public void BlockActions() => SetSelectionMode(new BlockActionMode());
 
         private void OnTargetSelectionCompleted(IReadOnlyCollection<GridCell> cells)
         {
             if (SelectedCard == null) return;
 
-            //CardData cardData = SelectedCard.GetData<CardData>();
-            ExecuteAction(SelectedAction, cells);
+            ExecuteActionContext context = new(SelectedAction, SelectedUnit, cells);
+            RequestAction(SelectedCard.Data, context);
+            BlockActions();
         }
 
         public void ResetContext()
@@ -100,47 +109,48 @@ namespace Echobay.ActionContext
             _cardController.ClearCards();
             _contextLinks.Grid.ResetGrid();
 
-            SetContext(_selectCellContext);
+            SetSelectionMode(_selectCellMode);
         }
 
-        public void MoveAction(GridCell targetCell)
+        public void RequestMove(GridCell target)
         {
-            MoveAction moveAction = new(_pathFinder);
+            if (SelectedUnit == null) return;
 
-            SelectedAction = moveAction;
-            SelectedAction.OnActionExecuted += ActionExecuted;
-
-            ExecuteActionContext context = new(SelectedUnit, targetCell);
-            moveAction.Execute(context);
-
-            _cardController.ClearCards();
+            OnMoveRequested?.Invoke(SelectedUnit, target);
         }
 
-        public void ExecuteAction(ICardAction cardAction, IReadOnlyCollection<GridCell> cells)
+        public void RequestAction(CardData cardData, ExecuteActionContext context)
         {
-            ExecuteActionContext context = new(SelectedUnit, cells);
-            Card card = SelectedCard;
-
-            if (cardAction.CanExecute(context))
+            if (IsActionExecuting)
             {
-                cardAction.OnActionExecuted += ActionExecuted;
-                cardAction.OnActionExecuted += SetEffects;
-
-                cardAction.Execute(context);
+                Debug.LogError("[RequestAction]: Action already active");
+                return;
             }
 
-            _cardController.ClearCards();
-
-            void SetEffects()
+            if (SelectedUnit == null || SelectedAction == null)
             {
-                cardAction.OnActionExecuted -= SetEffects;
-
-                CardData cardData = card.GetData<CardData>();
-                ApplyEffects(cardData, context);
+                Debug.LogError("Unit or action null reference");
+                return;
             }
+
+            IsActionExecuting = true;
+            OnActionRequested?.Invoke(cardData, context);
         }
 
-        private void ActionExecuted()
+        public void ActionExecuted()
+        {
+            CancelAction();
+
+            OnActionExecuted?.Invoke();
+        }
+
+        public void ActionExecuted(ExecuteActionContext context)
+        {
+            ApplyEffects(SelectedCard.Data, context);
+            ActionExecuted();
+        }
+
+        public void CancelAction()
         {
             if (SelectedAction != null)
             {
@@ -150,10 +160,10 @@ namespace Echobay.ActionContext
 
             ResetContext();
 
-            OnActionExecuted?.Invoke();
-
             SelectUnit(null);
             SelectedCard = null;
+
+            IsActionExecuting = false;
         }
 
         private void ApplyEffects(CardData cardData, ExecuteActionContext context)
@@ -180,7 +190,7 @@ namespace Echobay.ActionContext
         {
             if (SelectedCard == card)
             {
-                CurrentContext.OnClickOnCard();
+                CurrentSelectionMode.OnClickOnCard();
             }
         }
 
@@ -190,8 +200,8 @@ namespace Echobay.ActionContext
 
             SelectedCard = card;
 
-            CardData cardData = card.GetData<CardData>();
-            SetContext(cardData.TargetingMode);
+            CardData cardData = card.Data;
+            SetSelectionMode(cardData.TargetingMode);
 
             IsConfirmState = true;
 
@@ -203,7 +213,7 @@ namespace Echobay.ActionContext
         {
             IsConfirmState = false;
             SelectedCard = null;
-            SetContext(new MoveTargetMode());
+            SetSelectionMode(new MoveTargetMode());
 
             SelectedAction.Exit();
         }
@@ -212,7 +222,7 @@ namespace Echobay.ActionContext
         {
             if (interactable is GridCell cell)
             {
-                CurrentContext?.OnCellEnter(cell);
+                CurrentSelectionMode?.OnCellEnter(cell);
             }
         }
 
@@ -220,7 +230,7 @@ namespace Echobay.ActionContext
         {
             if (interactable is GridCell cell)
             {
-                CurrentContext?.OnCellExit(cell);
+                CurrentSelectionMode?.OnCellExit(cell);
             }
         }
 
@@ -229,7 +239,7 @@ namespace Echobay.ActionContext
             if (interactable is GridCell cell)
             {
                 _cardController.OnCellSelected(interactable);
-                CurrentContext?.HandleCellClick(cell);
+                CurrentSelectionMode?.HandleCellClick(cell);
             }
         }
     }

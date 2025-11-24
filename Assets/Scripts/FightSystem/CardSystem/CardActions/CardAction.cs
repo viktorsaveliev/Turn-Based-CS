@@ -1,3 +1,4 @@
+using Sirenix.OdinInspector;
 using System;
 using UnityEngine;
 
@@ -10,7 +11,14 @@ namespace Echobay.CardSystem
 
         public abstract int Value { get; }
 
+        [field: SerializeField, ReadOnly] public string Key { get; private set; }
+
         [SerializeField] protected AnimationCommand[] AnimationCommands;
+
+        public CardAction()
+        {
+            Key = GetType().Name;
+        }
 
         public virtual void Enter()
         {

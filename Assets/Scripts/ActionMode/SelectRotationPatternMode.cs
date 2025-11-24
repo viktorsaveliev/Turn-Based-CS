@@ -38,6 +38,12 @@ namespace Echobay.ActionContext
 
             foreach (var oldCell in CellList)
             {
+                if (oldCell == null)
+                {
+                    Debug.LogError($"{oldCell} in CellList is null");
+                    continue;
+                }
+
                 oldCell.SetColor(ContextLinks.ViewData.CellRegularColor);
             }
 

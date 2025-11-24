@@ -16,13 +16,13 @@ namespace Echobay.MatchSystem
 
         public void SetupPlayers(MatchController matchController)
         {
-            Player human = matchController.CreatePlayer(_humanConfig);
-            Player bot = matchController.CreatePlayer(_botConfig);
+            MatchPlayer human = matchController.CreatePlayer(_humanConfig);
+            MatchPlayer bot = matchController.CreatePlayer(_botConfig);
 
             matchController.SpawnUnits(human, _humanConfig);
             matchController.SpawnUnits(bot, _botConfig);
 
-            matchController.SetLocalPlayer(human);
+            //matchController.SetLocalPlayer(human);
             matchController.StartTurns();
         }
     }

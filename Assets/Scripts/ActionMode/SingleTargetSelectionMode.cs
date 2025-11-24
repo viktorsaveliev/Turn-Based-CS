@@ -40,15 +40,7 @@ namespace Echobay.ActionContext
 
         public override void HandleCellClick(GridCell cell)
         {
-            ICardAction action = ContextLinks.ActionController.SelectedAction;
-            ICellOccupant character = ContextLinks.ActionController.SelectedUnit;
-
-            ExecuteActionContext context = new(character, cell);
-            if (ContextLinks.ActionController.SelectedAction.CanExecute(context))
-            {
-                action.Execute(context);
-                Complete();
-            }
+            Complete();
         }
 
         public override void OnClickOnCard()

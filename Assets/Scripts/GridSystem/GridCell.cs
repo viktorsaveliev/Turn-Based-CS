@@ -77,7 +77,7 @@ namespace Echobay.GridSystem
 
             if (IsOccupied)
             {
-                Debug.LogWarning("Cell is already occupied. Cannot set a new occupant.");
+                Debug.LogError("Cell is already occupied. Cannot set a new occupant.");
                 return;
             }
 

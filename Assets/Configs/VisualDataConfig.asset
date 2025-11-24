@@ -16,8 +16,8 @@ MonoBehaviour:
   <SelectedOutlineColor>k__BackingField: {r: 0, g: 0, b: 0, a: 0}
   _outlineSizeOnEnter: 2.25
   _outlineSizeOnSelect: 2.25
-  <CellSelectedColor>k__BackingField: {r: 1, g: 1, b: 1, a: 0.050980393}
-  <CellUnavailableColor>k__BackingField: {r: 1, g: 1, b: 1, a: 0.019607844}
-  <CellRegularColor>k__BackingField: {r: 1, g: 1, b: 1, a: 0.039215688}
+  <CellSelectedColor>k__BackingField: {r: 1, g: 1, b: 1, a: 0.02745098}
+  <CellUnavailableColor>k__BackingField: {r: 1, g: 1, b: 1, a: 0.003921569}
+  <CellRegularColor>k__BackingField: {r: 1, g: 1, b: 1, a: 0.007843138}
   <CellOccupiedColor>k__BackingField: {r: 0.5, g: 0.5, b: 0.5, a: 0.050980393}
   <CellTargetedColor>k__BackingField: {r: 1, g: 0, b: 0, a: 0.050980393}

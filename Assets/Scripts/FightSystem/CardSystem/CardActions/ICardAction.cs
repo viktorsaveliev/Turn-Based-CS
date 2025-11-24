@@ -4,6 +4,7 @@ namespace Echobay.CardSystem
 {
     public interface ICardAction
     {
+        public string Key { get; }
         public event Action OnActionExecuted;
 
         public void Enter();

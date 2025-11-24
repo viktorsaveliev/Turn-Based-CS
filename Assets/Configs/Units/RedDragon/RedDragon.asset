@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 76d5aeadc22c98e4892102e8f80c6015, type: 3}
+  m_Name: RedDragon
+  m_EditorClassIdentifier: 
+  <Icon>k__BackingField: {fileID: 0}
+  <Name>k__BackingField: Red Dragon
+  <Description>k__BackingField: Very Red
+  <MoveMaxDistance>k__BackingField: 3
+  <MoveSpeed>k__BackingField: 3
+  <MaxHealth>k__BackingField: 100
+  <Prefab>k__BackingField: {fileID: 3287167757744417377, guid: 1bc4c46d27674124e93ee41cf60f29a9, type: 3}
+  _cardsList:
+  - {fileID: 11400000, guid: 65690a4e340fe094fa5c1f816d0dde9f, type: 2}
+  - {fileID: 11400000, guid: a811b3fb3cf3005478a47cd2a40e8b75, type: 2}
+  - {fileID: 11400000, guid: 71688a0a9a074d34aadbe61f69419438, type: 2}
+  <Immunity>k__BackingField:
+  - DamageType: {fileID: 11400000, guid: e28300c88438d7c44962ada68996e38d, type: 2}
+    Resistance: 0.5
+  <Vulnerability>k__BackingField:
+  - DamageType: {fileID: 11400000, guid: 7ca8ec8e6bf3c104a90d62da285b908d, type: 2}
+    Resistance: 1.5
+  <OnTakeDamageReaction>k__BackingField: []
+  <OnDeathReaction>k__BackingField:
+  - rid: 3402816033440923721
+  references:
+    version: 2
+    RefIds:
+    - rid: 3402816033440923721
+      type: {class: ExplosionReaction, ns: Echobay.FightSystem.Reaction, asm: Assembly-CSharp}
+      data:
+        <Radius>k__BackingField: 10

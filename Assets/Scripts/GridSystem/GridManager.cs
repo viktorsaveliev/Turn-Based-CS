@@ -8,13 +8,6 @@ using UnityEngine;
 
 namespace Echobay.GridSystem
 {
-    [Serializable]
-    public class CellOccupantSetting
-    {
-        public GridCell TargetCell;
-        public Unit Unit;
-    }
-
     public class GridManager : MonoBehaviour, IGrid, IPathFinder
     {
         public IReadOnlyCollection<GridCell> GridCells => _gridCellEditors;
@@ -23,17 +16,24 @@ namespace Echobay.GridSystem
         [SerializeField] private Vector2Int _gridSize = new(10, 10);
 
         [SerializeField] private List<GridCell> _gridCellEditors = new();
-        [SerializeField] private CellOccupantSetting[] _cellOccupants;
 
         private void Awake()
         {
             InitializeNeighbors();
+        }
 
-            foreach (CellOccupantSetting cellOccupantSetting in _cellOccupants)
+        public bool TryGetCellByPosition(Vector2Int position, out GridCell cell)
+        {
+            cell = null;
+
+            foreach (GridCell gridCell in _gridCellEditors)
             {
-                cellOccupantSetting.TargetCell.SetOccupant(cellOccupantSetting.Unit);
-                cellOccupantSetting.Unit.transform.position = cellOccupantSetting.TargetCell.transform.position + new Vector3(0, 0.25f, 0);
+                if (gridCell.Position != position) continue;
+                cell = gridCell;
+                return true;
             }
+
+            return false;
         }
 
         public List<GridCell> GetCellsByPattern(GridCell origin, TargetAreaPattern pattern)

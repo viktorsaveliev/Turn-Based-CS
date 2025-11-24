@@ -13,7 +13,7 @@ namespace Echobay.CardSystem
         {
             base.Init(cardData);
 
-            AttackCardData attackData = GetData<AttackCardData>();
+            AttackCardData attackData = (AttackCardData)Data;
             _damageText.text = $"DMG: <color=red>{attackData.Action.Value}</color>";
         }
     }

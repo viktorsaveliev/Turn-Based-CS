@@ -11,6 +11,7 @@ namespace Echobay.UnitSystem
     public class UnitData : ScriptableObject
     {
         [field: Title("Base")]
+        [field: SerializeField, PreviewField(ObjectFieldAlignment.Left, Height = 80)] public Sprite Icon { get; private set; }
         [field: SerializeField] public string Name { get; private set; }
         [field: SerializeField] public string Description { get; private set; }
         [field: SerializeField, Range(0, 10)] public int MoveMaxDistance { get; private set; } = 3;

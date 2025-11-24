@@ -12,6 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 94153816dfeed86418e276ce2d5e5a98, type: 3}
   m_Name: Gameplay
   m_EditorClassIdentifier: 
+  <DefaultUnitsForNewPlayer>k__BackingField:
+  - {fileID: 11400000, guid: faec7de71f186704f82277a6e8a3c66d, type: 2}
+  - {fileID: 11400000, guid: 39d5e81178572654ebc57f2ff8f4b50d, type: 2}
+  - {fileID: 11400000, guid: adb48e9d819445042829010905a40c59, type: 2}
   <MatchStartDelayInSeconds>k__BackingField: 3
   <StandardTurnPointsPerRound>k__BackingField: 3
   <TimePerTurnInSeconds>k__BackingField: 30

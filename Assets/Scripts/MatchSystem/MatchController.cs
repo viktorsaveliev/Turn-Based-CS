@@ -1,81 +1,96 @@
 using Cysharp.Threading.Tasks;
+using Echobay.NetworkSystem.Lobby.Rooms;
 using Echobay.PlayerSystem;
+using Echobay.UnitSystem;
+using Fusion;
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 using Zenject;
 
 namespace Echobay.MatchSystem
 {
-    public class MatchController : IInitializable, IMatchMaster, IMatchInfo
+    public class MatchController : IMatchMaster, IMatchInfo
     {
-        public event Action<Player> OnPlayerCreated;
-        public event Action<Player> OnTurnGained;
-        public event Action<Player> OnTurnLost;
+        public event Action<MatchPlayer> OnPlayerCreated;
 
-        public Player LocalPlayer { get; private set; }
+        public IReadOnlyList<MatchPlayer> Players => _players;
 
-        private readonly PlayerFactory _playerFactory;
+        private readonly MatchPlayerFactory _playerFactory;
         private readonly UnitSpawner _spawner;
         private readonly CancellationTokenObject _tokenObject;
         private readonly GameplayData _settings;
+        private readonly UnitsDatabase _unitsDatabase;
 
         private readonly HashSet<IMatchObserver> _observers = new();
-        private readonly List<Player> _players = new();
+        private readonly List<MatchPlayer> _players = new();
 
         private IMatchMode _matchMode;
 
         [Inject]
         public MatchController(
-            PlayerFactory playerFactory, 
+            MatchPlayerFactory playerFactory, 
             UnitSpawner spawner,
             CancellationTokenObject cancellationTokenObject,
-            GameplayData gameplayData)
+            GameplayData gameplayData,
+            UnitsDatabase unitsDatabase)
         {
             _playerFactory = playerFactory;
             _spawner = spawner;
             _tokenObject = cancellationTokenObject;
             _settings = gameplayData;
+            _unitsDatabase = unitsDatabase;
         }
 
-        public void Initialize()
+        public void Init()
         {
-            PlayerConfig playerConfig = new()
+        }
+
+        public void StartMultiplayerMatch(IReadOnlyDictionary<PlayerRef, NetworkRoomPlayer> players)
+        {
+            List<PlayerConfig> playerConfigs = new();
+
+            foreach (var player in players)
             {
-                Name = "Player",
-                TeamID = 0,
-                UnitsData = new()
-            };
+                PlayerConfig config = new()
+                {
+                    PlayerRef = player.Key,
+                    Name = player.Value.PlayerName,
+                    TeamID = player.Value.TeamID,
+                };
 
-            PlayerConfig botConfig = new()
-            {
-                Name = "Bot",
-                TeamID = 1,
-                UnitsData = new()
-            };
+                config.UnitsDataID.CopyFrom(player.Value.UnitsDataID, 0, player.Value.UnitsDataID.Length);
+                playerConfigs.Add(config);
+            }
 
-            IMatchMode mode = new SingleplayerMatchMode(playerConfig, botConfig);
-
-            _matchMode = mode;
+            _matchMode = new MultiplayerMatchMode(playerConfigs);
             _matchMode.SetupPlayers(this);
         }
 
-        public Player CreatePlayer(PlayerConfig config)
+        public MatchPlayer CreatePlayer(PlayerConfig config)
         {
-            Player player = _playerFactory.CreatePlayer(config);
+            MatchPlayer player = _playerFactory.CreatePlayer(config);
             _players.Add(player);
 
             OnPlayerCreated?.Invoke(player);
+
+            Debug.Log($"MatchController | Player created: {player.Data.Name}");
             return player;
         }
 
-        public void SetLocalPlayer(Player player)
+        public void SpawnUnits(MatchPlayer player, PlayerConfig config)
         {
-            LocalPlayer = player;
-        }
+            List<UnitData> units = new();
 
-        public void SpawnUnits(Player player, PlayerConfig config)
-        {
-            _spawner.SpawnPlayerUnits(player, config.UnitsData);
+            for (int i = 0; i < config.UnitsDataID.Length; i++)
+            {
+                if (_unitsDatabase.TryGetUnitDataByID(config.UnitsDataID[i], out UnitData unitData)) 
+                {
+                    units.Add(unitData);
+                }
+            }
+
+            _spawner.SpawnPlayerUnits(player, units);
         }
 
         public async void StartTurns()

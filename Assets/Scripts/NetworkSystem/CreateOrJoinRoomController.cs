@@ -17,6 +17,8 @@ namespace Networking
         public event Action<PlayerRef, string, GameMode> OnCreateOrJoinRoom;
         public event Action<PlayerRef> OnExitRoom;
 
+        public bool IsConnected => _runner != null;
+
         [SerializeField] private NetworkRunner _runnerPrefab;
 
         private NetworkSceneManagerDefault _sceneManager;
@@ -73,8 +75,8 @@ namespace Networking
 
             if (result.Ok)
             {
-                Debug.Log($"Simulation started as {GameMode.Shared} in public room");
-                OnCreateOrJoinRoom?.Invoke(_runner.LocalPlayer, "", GameMode.Shared);
+                Debug.Log($"Simulation started as {startGameArgs.GameMode} in public room");
+                OnCreateOrJoinRoom?.Invoke(_runner.LocalPlayer, "", startGameArgs.GameMode);
             }
             else
             {
@@ -131,7 +133,7 @@ namespace Networking
 
             StartGameArgs gameArgs = new()
             {
-                GameMode = GameMode.Client,
+                GameMode = GameMode.AutoHostOrClient,
                 SceneManager = _sceneManager,
                 Scene = GetScene(),
                 PlayerCount = 6,
@@ -153,7 +155,7 @@ namespace Networking
 
             StartGameArgs gameArgs = new()
             {
-                GameMode = GameMode.Shared,
+                GameMode = GameMode.Host,
                 SessionName = sessionName,
                 SceneManager = _sceneManager,
                 Scene = GetScene(),
@@ -173,7 +175,7 @@ namespace Networking
 
             StartGameArgs gameArgs = new()
             {
-                GameMode = GameMode.Shared,
+                GameMode = GameMode.Client,
                 SessionName = sessionName,
                 SceneManager = _sceneManager,
                 Scene = GetScene(),

@@ -18,8 +18,11 @@ namespace Echobay.CardSystem
         {
             base.Enter();
 
-            _particles = new(_attackVFXPrefab, null, _vfxAmount);
-            _particles.CreatePool();
+            if (_attackVFXPrefab != null)
+            {
+                _particles = new(_attackVFXPrefab, null, _vfxAmount);
+                _particles.CreatePool();
+            }
         }
 
         public override void Exit()

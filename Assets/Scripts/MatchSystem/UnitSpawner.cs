@@ -12,9 +12,14 @@ namespace Echobay.MatchSystem
 {
     public class UnitSpawner : MonoBehaviour
     {
+        public IReadOnlyCollection<Unit> Units => _units;
+
         [SerializeField] private SpawnData[] _spawnDatas;
 
+        private readonly HashSet<Unit> _units = new();
+
         private UnitFactory _factory;
+        private int _unitsCount = 0;
 
         [Inject]
         public void Construct(UnitFactory factory)
@@ -22,12 +27,12 @@ namespace Echobay.MatchSystem
             _factory = factory;
         }
 
-        public void SpawnPlayerUnits(Player player, IReadOnlyList<UnitData> unitDatas)
+        public void SpawnPlayerUnits(MatchPlayer player, IReadOnlyList<UnitData> unitDatas)
         {
-            SpawnData spawnData = _spawnDatas.FirstOrDefault(s => s.TeamID == player.TeamID);
+            SpawnData spawnData = _spawnDatas.FirstOrDefault(s => s.TeamID == player.Data.TeamID);
             if (spawnData == null)
             {
-                Debug.LogError($"No spawn data for team {player.TeamID}");
+                Debug.LogError($"No spawn data for team {player.Data.TeamID}");
                 return;
             }
 
@@ -35,8 +40,30 @@ namespace Echobay.MatchSystem
             for (int i = 0; i < count; i++)
             {
                 Unit unit = _factory.CreateUnit(unitDatas[i], spawnData.SpawnCells[i].transform);
-                unit.Init(player.TeamID);
+
+                int unitID = _unitsCount;
+
+                unit.Init(player, unitID);
+
+                spawnData.SpawnCells[i].SetOccupant(unit);
+
+                _units.Add(unit);
+                _unitsCount++;
             }
+        }
+
+        public bool TryGetUnitByID(int id, out Unit targetUnit)
+        {
+            targetUnit = null;
+
+            foreach (Unit unit in _units)
+            {
+                if (unit.UnitID != id) continue;
+                targetUnit = unit;
+                return true;
+            }
+
+            return false;
         }
     }
 
@@ -50,7 +77,7 @@ namespace Echobay.MatchSystem
 
         private IEnumerable<ValueDropdownItem<GridCell>> GetAllCells()
         {
-            foreach (var cell in GameObject.FindObjectsByType<GridCell>(FindObjectsSortMode.None))
+            foreach (GridCell cell in GameObject.FindObjectsByType<GridCell>(FindObjectsSortMode.InstanceID))
             {
                 yield return new ValueDropdownItem<GridCell>($"Cell {cell.Position}", cell);
             }

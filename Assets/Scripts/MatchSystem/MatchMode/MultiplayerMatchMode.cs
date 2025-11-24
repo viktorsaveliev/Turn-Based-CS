@@ -1,13 +1,14 @@
 using Echobay.PlayerSystem;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Echobay.MatchSystem
 {
     public class MultiplayerMatchMode : IMatchMode
     {
-        private readonly PlayerConfig[] _playerConfigs;
+        private readonly List<PlayerConfig> _playerConfigs;
 
-        public MultiplayerMatchMode(PlayerConfig[] configs)
+        public MultiplayerMatchMode(List<PlayerConfig> configs)
         {
             _playerConfigs = configs;
         }
@@ -16,7 +17,7 @@ namespace Echobay.MatchSystem
         {
             foreach (PlayerConfig config in _playerConfigs)
             {
-                Player player = matchController.CreatePlayer(config);
+                MatchPlayer player = matchController.CreatePlayer(config);
                 matchController.SpawnUnits(player, config);
             }
 

@@ -15,5 +15,6 @@ namespace Echobay.GridSystem
         public List<GridCell> GetCellsByPattern(GridCell origin, TargetAreaPattern pattern);
         public List<GridCell> GetCellsByOffsets(GridCell origin, IReadOnlyCollection<Vector2Int> offsets);
         public List<GridCell> GetCellsInRadius(GridCell centerCell, int maxSteps);
+        public bool TryGetCellByPosition(Vector2Int position, out GridCell cell);
     }
 }

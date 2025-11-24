@@ -15,8 +15,14 @@ namespace Echobay.ActionContext
 
         public override void HandleCellClick(GridCell cell)
         {
+            if (ContextLinks.ActionController.SelectedUnit == cell.Occupant)
+            {
+                ContextLinks.ActionController.CancelAction();
+                return;
+            }
+
             ContextLinks.Grid.SetActiveCells(false);
-            ContextLinks.ActionController.MoveAction(cell);
+            ContextLinks.ActionController.RequestMove(cell);
         }
 
         public override string GetDescription()

@@ -6,6 +6,6 @@ namespace Echobay.MatchSystem
 {
     public interface IMatchInfo
     {
-        public Player LocalPlayer { get; }
+
     }
 }

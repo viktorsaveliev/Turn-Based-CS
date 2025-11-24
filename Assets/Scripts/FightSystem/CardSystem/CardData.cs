@@ -14,7 +14,7 @@ namespace Echobay.CardSystem
         [field: SerializeField] public string Description { get; private set; }
         [field: SerializeField, PreviewField(ObjectFieldAlignment.Left, Height = 80)] public Sprite Icon { get; private set; }
         [field: SerializeField, PreviewField(ObjectFieldAlignment.Left, Height = 80)] public Sprite BG { get; private set; }
-        [field: SerializeField, Range(0, 5)] public int TurnCost { get; private set; } = 1;
+        [field: SerializeField, Range(0, 5)] public int RequiredActionPoints { get; private set; } = 1;
         [field: SerializeField, Range(0, 5)] public int EnergyCost { get; private set; } = 0;
         [field: SerializeField, Range(0, 10)] public int MaxDistanceByCharacter { get; private set; } = 3;
         [field: SerializeField, Range(0, 5)] public int EnergyGain { get; private set; } = 0;

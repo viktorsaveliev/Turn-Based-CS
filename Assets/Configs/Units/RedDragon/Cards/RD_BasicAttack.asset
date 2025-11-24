@@ -1,0 +1,98 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c5db0878519e47743b3ee576ae5a5c8a, type: 3}
+  m_Name: RD_BasicAttack
+  m_EditorClassIdentifier: 
+  <Name>k__BackingField: Base Attack
+  <Description>k__BackingField: Very base
+  <Icon>k__BackingField: {fileID: 10917, guid: 0000000000000000f000000000000000, type: 0}
+  <BG>k__BackingField: {fileID: 0}
+  <TurnCost>k__BackingField: 1
+  <EnergyCost>k__BackingField: 1
+  <MaxDistanceByCharacter>k__BackingField: 3
+  <EnergyGain>k__BackingField: 1
+  <Prefab>k__BackingField: {fileID: 3854179437147671246, guid: 91aea69e5fc1d4f489fc4dd35d8ac4de, type: 3}
+  <DamageType>k__BackingField: {fileID: 11400000, guid: e28300c88438d7c44962ada68996e38d, type: 2}
+  <TargetingMode>k__BackingField:
+    rid: 6961099597943406653
+  <Action>k__BackingField:
+    rid: 6961100094785192200
+  <EffectsForTarget>k__BackingField:
+  - <StatusEffect>k__BackingField:
+      rid: 3402816042623041781
+  <EffectsForAttacker>k__BackingField:
+  - <StatusEffect>k__BackingField:
+      rid: 3402816042623041782
+  - <StatusEffect>k__BackingField:
+      rid: 3402816108012765250
+  references:
+    version: 2
+    RefIds:
+    - rid: 3402816042623041781
+      type: {class: BurningEffect, ns: Echobay.FightSystem.StatusEffects, asm: Assembly-CSharp}
+      data:
+        <RemainingTurns>k__BackingField: 2
+        _damagePerTurn: 12
+    - rid: 3402816042623041782
+      type: {class: HealingEffect, ns: Echobay.FightSystem.StatusEffects, asm: Assembly-CSharp}
+      data:
+        <RemainingTurns>k__BackingField: 2
+        _healPerTurn: 20
+    - rid: 3402816108012765250
+      type: {class: CounterattackEffect, ns: Echobay.FightSystem.StatusEffects, asm: Assembly-CSharp}
+      data:
+        <RemainingTurns>k__BackingField: 2
+        <Action>k__BackingField:
+          rid: 3402816108012765251
+    - rid: 3402816108012765251
+      type: {class: AlternatingAttackAction, ns: Echobay.CardSystem, asm: Assembly-CSharp}
+      data:
+        <Key>k__BackingField: AlternatingAttackAction
+        AnimationCommands:
+        - _parameterName: 
+          _type: 0
+          _intValue: 0
+          _floatValue: 0
+          _boolValue: 0
+        - _parameterName: 
+          _type: 1
+          _intValue: 0
+          _floatValue: 0
+          _boolValue: 0
+        DamageAmount: 10
+        _attackVFXPrefab: {fileID: 0}
+        _vfxAmount: 1
+        _delayBetweenAttacks: 1
+    - rid: 6961099597943406653
+      type: {class: ConfirmPatternMode, ns: Echobay.ActionContext, asm: Assembly-CSharp}
+      data:
+        _patternData: {fileID: 11400000, guid: b8bc0679b5bd30941b53f111bbd8aefb, type: 2}
+        _completeDelay: 0.5
+    - rid: 6961100094785192200
+      type: {class: AlternatingAttackAction, ns: Echobay.CardSystem, asm: Assembly-CSharp}
+      data:
+        <Key>k__BackingField: AlternatingAttackAction
+        AnimationCommands:
+        - _parameterName: Attack
+          _type: 0
+          _intValue: 0
+          _floatValue: 0
+          _boolValue: 0
+        - _parameterName: AttackID
+          _type: 1
+          _intValue: 0
+          _floatValue: 0
+          _boolValue: 0
+        DamageAmount: 10
+        _attackVFXPrefab: {fileID: 4208843959898764096, guid: 822f15fb62cbfd444b09772e08764a1f, type: 3}
+        _vfxAmount: 4
+        _delayBetweenAttacks: 0.19

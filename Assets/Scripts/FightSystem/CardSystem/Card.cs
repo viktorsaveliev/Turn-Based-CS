@@ -12,7 +12,8 @@ namespace Echobay.CardSystem
     {
         public event Action<Card> OnClicked;
 
-        [SerializeField] private CardData _data;
+        [field: SerializeField] public CardData Data { get; private set; }
+
         [SerializeField] private Button _button;
 
         [Title("Base Info")]
@@ -53,16 +54,16 @@ namespace Echobay.CardSystem
 
         public virtual void Init(CardData cardData)
         {
-            _data = cardData;
+            Data = cardData;
 
-            _icon.sprite = _data.Icon;
-            _bg.sprite = _data.BG;
-            _name.text = _data.Name;
-            _description.text = _data.Description;
+            _icon.sprite = Data.Icon;
+            _bg.sprite = Data.BG;
+            _name.text = Data.Name;
+            _description.text = Data.Description;
 
-            if (_data.TurnCost > 0)
+            if (Data.RequiredActionPoints > 0)
             {
-                _turnCost.text = _data.TurnCost.ToString();
+                _turnCost.text = Data.RequiredActionPoints.ToString();
             }
             else
             {
@@ -70,9 +71,9 @@ namespace Echobay.CardSystem
                 _turnCost.gameObject.SetActive(false);
             }
 
-            if (_data.EnergyCost > 0)
+            if (Data.EnergyCost > 0)
             {
-                _energyCost.text = _data.EnergyCost.ToString();
+                _energyCost.text = Data.EnergyCost.ToString();
             }
             else
             {
@@ -80,9 +81,9 @@ namespace Echobay.CardSystem
                 _energyCost.gameObject.SetActive(false);
             }
 
-            if (_data.EnergyGain > 0)
+            if (Data.EnergyGain > 0)
             {
-                _energyGain.text = _data.EnergyGain.ToString();
+                _energyGain.text = Data.EnergyGain.ToString();
             }
             else
             {
@@ -90,8 +91,6 @@ namespace Echobay.CardSystem
                 _energyGain.gameObject.SetActive(false);
             }
         }
-
-        public T GetData<T>() where T : CardData => _data as T;
 
         public void OnClick()
         {

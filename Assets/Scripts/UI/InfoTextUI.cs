@@ -1,92 +1,117 @@
 using DG.Tweening;
-using Echobay.MatchSystem.TurnSystem;
+using Echobay.NetworkSystem.Match;
 using Echobay.PlayerSystem;
+using Fusion;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using Zenject;
 
 namespace Echobay.MatchSystem
 {
-    public class InfoTextUI : MonoBehaviour, IMatchObserver, ITurnObserver
+    public class InfoTextUI : MonoBehaviour
     {
         [SerializeField] private TMP_Text _text;
         [SerializeField, Range(1, 3)] private float _animDuration = 2f;
         [SerializeField] private Vector2 _fromToMove = new(-50, 50);
 
-        private IMatchMaster _matchMaster;
-        private IMatchInfo _matchInfo;
-        private ITurnMaster _master;
-        private ITurnInfo _turnInfo;
+        private readonly Queue<string> _messageQueue = new();
+        private bool _isShowing = false;
+
+        private NetworkTurnController _networkTurnController;
+        private NetworkMatchController _networkMatchController;
 
         [Inject]
-        public void Construct(IMatchMaster matchMaster, IMatchInfo matchInfo, ITurnMaster master, ITurnInfo turnInfo)
+        public void Construct(
+            NetworkTurnController netTurns,
+            NetworkMatchController matchInfo)
         {
-            _matchMaster = matchMaster;
-            _matchInfo = matchInfo;
-            _master = master;
-            _turnInfo = turnInfo;
+            _networkTurnController = netTurns;
+            _networkMatchController = matchInfo;
         }
 
         private void Awake()
         {
-            _matchMaster.Register(this);
-            _master.Register(this);    
+            _networkTurnController.OnRoundChanged += HandleRoundChanged;
+            _networkTurnController.OnCurrentPlayerChanged += HandlePlayerChanged;
+
+            _text.gameObject.SetActive(false);
         }
 
         private void OnDestroy()
         {
-            _matchMaster.Unregister(this);
-            _master.Unregister(this);
+            _networkTurnController.OnRoundChanged -= HandleRoundChanged;
+            _networkTurnController.OnCurrentPlayerChanged -= HandlePlayerChanged;
         }
 
-        public void OnMatchStarted()
+        private void HandleRoundChanged(int round)
         {
-            _turnInfo.OnTurnGained += OnTurnGained;
-        }
+            if (round == 0) return;
 
-        public void OnMatchEnded()
-        {
-            _turnInfo.OnTurnGained -= OnTurnGained;
-        }
+            ShowTextQueued($"Round <color=red>{round}</color>");
 
-        public void OnRoundStarted()
-        {
-            ShowText($"Round <color=red>{_master.CurrentRound}</color> started");
-        }
+            /*PlayerRef newPlayer = _networkTurnController.CurrentPlayer;
 
-        public void OnTurnEnded()
-        {
-            ShowText($"Round <color=red>{_master.CurrentRound}</color> ended");
-        }
-
-        private void OnTurnGained(Player player)
-        {
-            if (player == _matchInfo.LocalPlayer)
+            if (newPlayer == _networkMatchController.LocalPlayer.Data.PlayerRef)
             {
-                Debug.Log(player.Name + " turn");
-                ShowText("Your turn");
+                ShowTextQueued("Your turn");
             }
             else
             {
-                Debug.Log(player.Name + "Opponent turn");
-                ShowText("Opponent's turn");
+                if (_networkMatchController.TryGetMatchPlayerByRef(newPlayer, out MatchPlayer matchPlayer))
+                {
+                    ShowTextQueued($"{matchPlayer.Data.Name} turn");
+                }
+            }*/
+        }
+
+        private void HandlePlayerChanged(PlayerRef newPlayer)
+        {
+            if (newPlayer == PlayerRef.None) return;
+
+            if (newPlayer == _networkMatchController.LocalPlayer.Data.PlayerRef)
+            {
+                ShowTextQueued("Your turn");
+            }
+            else
+            {
+                if (_networkMatchController.TryGetMatchPlayerByRef(newPlayer, out MatchPlayer matchPlayer))
+                {
+                    ShowTextQueued($"{matchPlayer.Data.Name} turn");
+                }
             }
         }
 
-        private void ShowText(string text)
+        private void ShowTextQueued(string text)
         {
+            _messageQueue.Enqueue(text);
+            if (!_isShowing)
+                ShowNext();
+        }
+
+        private void ShowNext()
+        {
+            if (_messageQueue.Count == 0)
+            {
+                _isShowing = false;
+                return;
+            }
+
+            _isShowing = true;
+            string text = _messageQueue.Dequeue();
             _text.text = text;
             _text.rectTransform.anchoredPosition = new Vector2(_fromToMove.x, 0);
-
             _text.gameObject.SetActive(true);
 
             _text.DOFade(1, 0.5f);
-            _text.rectTransform.DOAnchorPosX(_fromToMove.y, _animDuration).SetEase(Ease.OutCubic)
+            _text.rectTransform.DOAnchorPosX(_fromToMove.y, _animDuration)
+                .SetEase(Ease.OutCubic)
                 .OnComplete(() =>
                 {
                     _text.DOFade(0, 0.5f).OnComplete(() =>
                     {
                         _text.gameObject.SetActive(false);
+                        ShowNext();
                     });
                 });
         }

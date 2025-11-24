@@ -1,3 +1,4 @@
+using Echobay.UnitSystem;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -6,6 +7,9 @@ namespace Echobay
     [CreateAssetMenu(fileName = "Gameplay", menuName = "Game/Gameplay Data")]
     public class GameplayData : ScriptableObject
     {
+        [field: Title("Base Settings")]
+        [field: SerializeField] public UnitData[] DefaultUnitsForNewPlayer { get; private set; }
+
         [field: Title("Match Settings")]
         [field: SerializeField, Range(3, 15)] public int MatchStartDelayInSeconds { get; private set; } = 3;
 

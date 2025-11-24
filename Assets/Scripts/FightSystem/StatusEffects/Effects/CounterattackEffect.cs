@@ -14,7 +14,7 @@ namespace Echobay.FightSystem.StatusEffects
             Unit attackerUnit = attacker as Unit;
             Unit unit = (Unit)StatusObject;
 
-            ExecuteActionContext context = new(unit, attackerUnit.CurrentCell, Action.Value);
+            ExecuteActionContext context = new(Action, unit, attackerUnit.CurrentCell);
             Action.Execute(context);
         }
 

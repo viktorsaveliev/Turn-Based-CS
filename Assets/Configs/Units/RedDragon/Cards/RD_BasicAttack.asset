@@ -16,7 +16,7 @@ MonoBehaviour:
   <Description>k__BackingField: Very base
   <Icon>k__BackingField: {fileID: 10917, guid: 0000000000000000f000000000000000, type: 0}
   <BG>k__BackingField: {fileID: 0}
-  <TurnCost>k__BackingField: 1
+  <RequiredActionPoints>k__BackingField: 3
   <EnergyCost>k__BackingField: 1
   <MaxDistanceByCharacter>k__BackingField: 3
   <EnergyGain>k__BackingField: 1

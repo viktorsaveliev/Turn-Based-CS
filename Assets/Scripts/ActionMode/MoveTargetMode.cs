@@ -21,7 +21,8 @@ namespace Echobay.ActionContext
                 return;
             }
 
-            ContextLinks.Grid.SetActiveCells(false);
+            //ContextLinks.Grid.SetActiveCells(false);
+            ContextLinks.ActionController.BlockActions();
             ContextLinks.ActionController.RequestMove(cell);
         }
 

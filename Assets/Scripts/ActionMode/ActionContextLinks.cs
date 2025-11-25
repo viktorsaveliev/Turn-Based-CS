@@ -1,14 +1,12 @@
 using Echobay.CardSystem;
 using Echobay.GridSystem;
-using Echobay.MatchSystem.TurnSystem;
 using Echobay.PlayerSystem;
-using System;
 using UnityEngine;
 using Zenject;
 
 namespace Echobay.ActionContext
 {
-    public class ActionContextLinks : IDisposable
+    public class ActionContextLinks
     {
         public MatchPlayer Player { get; private set; }
         public IGrid Grid { get; private set; }
@@ -19,8 +17,6 @@ namespace Echobay.ActionContext
         public ObjectInteractionViewData ViewData { get; private set; }
         public CardController CardController { get; private set; }
 
-        private readonly ITurnInfo _turnInfo;
-
         [Inject]
         public ActionContextLinks(
             IGrid grid, 
@@ -28,7 +24,6 @@ namespace Echobay.ActionContext
             IInteractHandler interactHandler,
             GridPathView pathView, 
             ObjectInteractionViewData objectInteractionView,
-            ITurnInfo turnInfo,
             CardController cardController)
         {
             Grid = grid;
@@ -37,23 +32,14 @@ namespace Echobay.ActionContext
             PathView = pathView;
             ViewData = objectInteractionView;
             CardController = cardController;
-
-            _turnInfo = turnInfo;
         }
 
         public void Init(ActionController actionController)
         {
             ActionController = actionController;
-
-            _turnInfo.OnTurnGained += OnTurnGained;
         }
 
-        public void Dispose()
-        {
-            _turnInfo.OnTurnGained -= OnTurnGained;
-        }
-
-        private void OnTurnGained(MatchPlayer player)
+        public void SetCurrentPlayer(MatchPlayer player)
         {
             Player = player;
         }

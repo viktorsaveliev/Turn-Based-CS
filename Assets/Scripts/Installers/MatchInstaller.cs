@@ -33,7 +33,6 @@ namespace Echobay.Installers
         private InputData _inputData;
 
         private ActionController _actionController;
-        private ActionContextLinks _actionContext;
 
         private MatchController _matchController;
         private TurnController _turnController;
@@ -61,7 +60,6 @@ namespace Echobay.Installers
             _gridTurnActivator.Dispose();
             _actionController.Dispose();
             _turnController.Dispose();
-            _actionContext.Dispose();
         }
 
         public override void InstallBindings()
@@ -106,7 +104,6 @@ namespace Echobay.Installers
             _inputData = Container.Resolve<InputData>();
 
             _actionController = Container.Resolve<ActionController>();
-            _actionContext = Container.Resolve<ActionContextLinks>();
 
             _networkProvider = Container.Resolve<NetworkRunnerProvider>();
 

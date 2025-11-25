@@ -1,4 +1,5 @@
 using Echobay.NetworkSystem.Match;
+using System.Collections;
 using TMPro;
 using UnityEngine;
 using Zenject;
@@ -19,17 +20,34 @@ namespace Echobay.UISystem
 
         private void OnEnable()
         {
-            _matchController.LocalPlayer.OnActionPointsChanged += OnActionPointsChanged;
+            StartCoroutine(SubscribeProcess());
         }
 
         private void OnDisable()
         {
-            _matchController.LocalPlayer.OnActionPointsChanged -= OnActionPointsChanged;
+            if (_matchController.LocalPlayer != null)
+            {
+                _matchController.LocalPlayer.OnActionPointsChanged -= OnActionPointsChanged;
+            }
         }
 
         private void OnActionPointsChanged(int actionPoints)
         {
             _pointsText.text = $"{actionPoints}";
+        }
+
+        private IEnumerator SubscribeProcess()
+        {
+            while (true)
+            {
+                if (_matchController.LocalPlayer == null)
+                {
+                    yield return null;
+                }
+
+                _matchController.LocalPlayer.OnActionPointsChanged += OnActionPointsChanged;
+                break;
+            }
         }
     }
 }

@@ -32,7 +32,9 @@ namespace Echobay.UISystem
 
         private void HandlePlayerChanged(PlayerRef newPlayer)
         {
-            if (newPlayer == _networkMatchController.LocalPlayer.Data.PlayerRef)
+            MatchPlayer localPlayer = _networkMatchController.LocalPlayer;
+
+            if (localPlayer != null && newPlayer == localPlayer.Data.PlayerRef)
             {
                 Show();
             }

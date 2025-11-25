@@ -1,3 +1,4 @@
+using Echobay.ActionContext;
 using Echobay.MatchSystem.TurnSystem;
 using Echobay.PlayerSystem;
 using Fusion;
@@ -20,12 +21,14 @@ namespace Echobay.NetworkSystem.Match
         private TurnController _turnController;
         private ChangeDetector _changeDetector;
         private NetworkMatchController _networkMatchController;
+        private ActionContextLinks _contextLinks;
 
         [Inject]
-        public void Construct(TurnController turnController, NetworkMatchController networkMatchController)
+        public void Construct(TurnController turnController, NetworkMatchController networkMatchController, ActionContextLinks actionContextLinks)
         {
             _turnController = turnController;
             _networkMatchController = networkMatchController;
+            _contextLinks = actionContextLinks;
         }
 
         public override void Spawned()
@@ -74,6 +77,11 @@ namespace Echobay.NetworkSystem.Match
                         {
                             var reader = GetPropertyReader<PlayerRef>(nameof(CurrentPlayer));
                             var (_, newVal) = reader.Read(prev, curr);
+
+                            if (_networkMatchController.TryGetMatchPlayerByRef(newVal, out MatchPlayer matchPlayer))
+                            {
+                                _contextLinks.SetCurrentPlayer(matchPlayer);
+                            }
 
                             OnCurrentPlayerChanged?.Invoke(newVal);
                             break;

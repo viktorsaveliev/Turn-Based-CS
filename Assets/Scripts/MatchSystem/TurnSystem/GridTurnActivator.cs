@@ -1,5 +1,6 @@
 using Echobay.ActionContext;
 using Echobay.NetworkSystem.Match;
+using Echobay.PlayerSystem;
 using Fusion;
 using System;
 using UnityEngine;
@@ -36,9 +37,11 @@ namespace Echobay.MatchSystem.TurnSystem
 
         private void HandlePlayerChanged(PlayerRef newPlayer)
         {
-            if (newPlayer == _networkMatchController.LocalPlayer.Data.PlayerRef)
+            MatchPlayer localPlayer = _networkMatchController.LocalPlayer;
+
+            if (localPlayer != null && newPlayer == localPlayer.Data.PlayerRef)
             {
-                _actionController.SelecttCellAction();
+                _actionController.SelectCellAction();
             }
             else
             {

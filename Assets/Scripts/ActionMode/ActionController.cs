@@ -24,7 +24,6 @@ namespace Echobay.ActionContext
         public bool IsActionExecuting { get; private set; }
         public Card SelectedCard { get; private set; }
 
-        private readonly SelectCellMode _selectCellMode = new();
         private readonly ActionContextLinks _contextLinks;
         private readonly CardController _cardController;
 
@@ -90,7 +89,7 @@ namespace Echobay.ActionContext
             OnSelectionModeChanged?.Invoke(CurrentSelectionMode);
         }
 
-        public void SelecttCellAction() => SetSelectionMode(_selectCellMode); 
+        public void SelectCellAction() => SetSelectionMode(new SelectCellMode()); 
         public void BlockActions() => SetSelectionMode(new BlockActionMode());
 
         private void OnTargetSelectionCompleted(IReadOnlyCollection<GridCell> cells)
@@ -109,7 +108,7 @@ namespace Echobay.ActionContext
             _cardController.ClearCards();
             _contextLinks.Grid.ResetGrid();
 
-            SetSelectionMode(_selectCellMode);
+            SelectCellAction();
         }
 
         public void RequestMove(GridCell target)

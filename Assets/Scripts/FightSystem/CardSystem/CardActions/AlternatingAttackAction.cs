@@ -61,7 +61,7 @@ namespace Echobay.CardSystem
                 await UniTask.WaitForSeconds(_delayBetweenAttacks);
             }
 
-            OnExecuted();
+            OnExecuted(context);
         }
 
         private async void PlayVFX(GridCell cell)

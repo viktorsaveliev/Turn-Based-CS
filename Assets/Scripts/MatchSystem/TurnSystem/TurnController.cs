@@ -70,7 +70,6 @@ namespace Echobay.MatchSystem.TurnSystem
         {
             if (player.ActionPoints < requiredPoints)
             {
-                Debug.Log($"You dont have points {requiredPoints}");
                 return false;
             }
             
@@ -119,7 +118,7 @@ namespace Echobay.MatchSystem.TurnSystem
 
             foreach (ITurnObserver observer in _observers)
             {
-                observer.OnRoundStarted();
+                observer.OnTurnStarted();
             }
         }
 

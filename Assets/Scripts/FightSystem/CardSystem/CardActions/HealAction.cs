@@ -19,7 +19,7 @@ namespace Echobay.CardSystem
                 damageable.Health.RecoveryHealth(_healAmount);
             }
             
-            OnExecuted();
+            OnExecuted(context);
         }
 
         public override bool CanExecute(ExecuteActionContext context)

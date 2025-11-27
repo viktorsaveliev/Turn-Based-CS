@@ -4,7 +4,7 @@ namespace Echobay.MatchSystem.TurnSystem
 {
     public interface ITurnObserver
     {
-        public void OnRoundStarted();
+        public void OnTurnStarted();
         public void OnTurnEnded();
     }
 }

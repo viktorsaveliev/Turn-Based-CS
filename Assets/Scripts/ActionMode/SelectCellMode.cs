@@ -20,12 +20,20 @@ namespace Echobay.ActionContext
                     ContextLinks.ActionController.SelectUnit(unit);
                     ContextLinks.ActionController.SetSelectionMode(new MoveTargetMode());
                 }
+                else
+                {
+                    Debug.LogError($"occupant not unit {cell.Occupant}");
+                }
+            }
+            else
+            {
+                Debug.LogError($"{ContextLinks.ActionController.SelectedUnit} : {cell.IsOccupied}");
             }
         }
 
         public override string GetDescription()
         {
-            return "Select cell";
+            return "Select unit";
         }
 
         public override void OnCellEnter(GridCell cell)

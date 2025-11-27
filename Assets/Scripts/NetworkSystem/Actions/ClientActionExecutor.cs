@@ -87,10 +87,10 @@ namespace Echobay.NetworkSystem.Match
 
             RunOnLocalOwnedUnit(unit, () =>
             {
-                void OnCompleted()
+                void OnCompleted(ExecuteActionContext context)
                 {
                     action.OnActionExecuted -= OnCompleted;
-                    _actionController.ActionExecuted();
+                    _actionController.ActionExecuted(context);
                 }
 
                 action.OnActionExecuted += OnCompleted;
@@ -119,7 +119,9 @@ namespace Echobay.NetworkSystem.Match
         {
             MatchPlayer localPlayer = _networkMatchController.LocalPlayer;
             if (localPlayer == unit.Owner && localPlayer.ActionPoints > 0)
+            {
                 callback?.Invoke();
+            }
         }
     }
 }

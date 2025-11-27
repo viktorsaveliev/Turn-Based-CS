@@ -113,6 +113,7 @@ namespace Echobay.NetworkSystem.Match
         private void HandleTurnGained(MatchPlayer player)
         {
             CurrentPlayer = player.Data.PlayerRef;
+            RPC_UpdatePlayerPoints(CurrentPlayer, player.ActionPoints);
         }
 
         private void InitClientState()
@@ -128,6 +129,10 @@ namespace Echobay.NetworkSystem.Match
             if (_networkMatchController.TryGetMatchPlayerByRef(playerRef, out MatchPlayer matchPlayer))
             {
                 matchPlayer.SetActionPoints(actionPointsValue);
+            }
+            else
+            {
+                Debug.LogError($"[RPC_UpdatePlayerPoints] Dont find {playerRef}");
             }
         }
     }

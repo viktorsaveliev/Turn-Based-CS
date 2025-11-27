@@ -40,7 +40,7 @@ namespace Echobay.MatchSystem.TurnSystem
             _turnMaster.Unregister(this);
         }
 
-        public void OnRoundStarted()
+        public void OnTurnStarted()
         {
             if (_coroutine != null)
             {

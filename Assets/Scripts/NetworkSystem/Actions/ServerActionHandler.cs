@@ -26,10 +26,21 @@ namespace Echobay.NetworkSystem.Match
             _turnController = turnController;
         }
 
-        public bool HandleAction(NetworkExecuteActionContext networkContext, Vector2Int[] cellPositions)
+        public bool HandleAction(NetworkExecuteActionContext networkContext, Vector2Int[] cellPositions, out NetworkRejectContext rejectContext)
         {
-            if (!_spawner.TryGetUnitByID(networkContext.UnitID, out Unit unit)) return false;
-            if(!_cardsDb.TryGetCardDataByID(networkContext.CardID, out CardData cardData)) return false;
+            rejectContext = new NetworkRejectContext();
+
+            if (!_spawner.TryGetUnitByID(networkContext.UnitID, out Unit unit))
+            {
+                rejectContext.ReasonText = "Target unit not found!";
+                return false;
+            }
+
+            if (!_cardsDb.TryGetCardDataByID(networkContext.CardID, out CardData cardData))
+            {
+                rejectContext.ReasonText = "Target card not found!";
+                return false;
+            }
 
             ICardAction action = cardData.Action;
 
@@ -46,7 +57,7 @@ namespace Echobay.NetworkSystem.Match
             ExecuteActionContext context = new(action, unit, cells);
             if (!action.CanExecute(context))
             {
-                Debug.Log("Can't execute");
+                rejectContext.ReasonText = "Can't execute!";
                 return false;
             }
 
@@ -55,12 +66,13 @@ namespace Echobay.NetworkSystem.Match
 
             if (_turnController.CurrentPlayer != player)
             {
-                Debug.LogError($"Not your turn {player.Data.Name}");
+                rejectContext.ReasonText = $"Not your turn {player.Data.Name}";
                 return false;
             }
 
             if (!_turnController.TrySpendPoints(player, requiredPoints))
             {
+                rejectContext.ReasonText = "Not enough action points";
                 return false;
             }
 

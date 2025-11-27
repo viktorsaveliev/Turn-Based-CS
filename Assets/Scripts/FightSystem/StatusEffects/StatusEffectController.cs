@@ -27,11 +27,11 @@ namespace Echobay.FightSystem.StatusEffects
             _master.Unregister(this);
         }
 
-        public void OnRoundStarted()
+        public void OnTurnStarted()
         {
             foreach (StatusEffectableObject unit in _units)
             {
-                unit.OnTurnStarted();
+                //unit.OnTurnStarted();
             }
         }
 

@@ -49,20 +49,6 @@ namespace Echobay.MatchSystem
             if (round == 0) return;
 
             ShowTextQueued($"Round <color=red>{round}</color>");
-
-            /*PlayerRef newPlayer = _networkTurnController.CurrentPlayer;
-
-            if (newPlayer == _networkMatchController.LocalPlayer.Data.PlayerRef)
-            {
-                ShowTextQueued("Your turn");
-            }
-            else
-            {
-                if (_networkMatchController.TryGetMatchPlayerByRef(newPlayer, out MatchPlayer matchPlayer))
-                {
-                    ShowTextQueued($"{matchPlayer.Data.Name} turn");
-                }
-            }*/
         }
 
         private void HandlePlayerChanged(PlayerRef newPlayer)

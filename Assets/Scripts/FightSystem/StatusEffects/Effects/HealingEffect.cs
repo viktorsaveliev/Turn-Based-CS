@@ -16,10 +16,13 @@ namespace Echobay.FightSystem.StatusEffects
                 Damageable.Health.RecoveryHealth(_healPerTurn);
                 Debug.Log($"{StatusObject.name} излечился на {_healPerTurn} ХП");
             }
+
+            Tick();
         }
 
         public override void OnExpire()
         {
+            base.OnExpire();
             Debug.Log($"{StatusObject.name} перестал лечиться");
         }
     }

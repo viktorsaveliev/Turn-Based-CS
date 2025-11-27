@@ -43,18 +43,18 @@ namespace Echobay.NetworkSystem.Match
         #region Action Request
         private void OnActionRequested(CardData cardData, ExecuteActionContext context)
         {
-            if (Runner.IsSinglePlayer)
+            /*if (Runner.IsSinglePlayer)
             {
                 ProcessActionLocally(context);
             }
             else
-            {
+            {*/
                 NetworkExecuteActionContext networkContext = ConvertLocalToNetworkContext(cardData, context);
                 RPC_RequestAction(networkContext);
-            }
+            //}
         }
 
-        private void ProcessActionLocally(ExecuteActionContext context)
+        /*private void ProcessActionLocally(ExecuteActionContext context)
         {
             Unit unit = (Unit)context.Executer;
 
@@ -62,7 +62,11 @@ namespace Echobay.NetworkSystem.Match
             {
                 _client.ExecuteAction(unit.UnitID, context.TargetCells, context.Action);
             }
-        }
+            else
+            {
+                RPC_ActionRejected(context.Executer, rejectContext);
+            }
+        }*/
 
         [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
         private void RPC_RequestAction(NetworkExecuteActionContext context)
@@ -71,9 +75,13 @@ namespace Echobay.NetworkSystem.Match
 
             Vector2Int[] targetCellPositions = ConvertNetworkArrayToArray(context);
 
-            if (_server.HandleAction(context, targetCellPositions))
+            if (_server.HandleAction(context, targetCellPositions, out NetworkRejectContext rejectContext))
             {
                 RPC_ApplyAction(context);
+            }
+            else
+            {
+                RPC_ActionRejected(context.PlayerRef, rejectContext);
             }
         }
 
@@ -83,7 +91,13 @@ namespace Echobay.NetworkSystem.Match
             Vector2Int[] targetCellPositions = ConvertNetworkArrayToArray(context);
             _client.ExecuteAction(context.UnitID, targetCellPositions, context.CardID);
         }
-        
+
+        [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+        private void RPC_ActionRejected([RpcTarget] PlayerRef playerRef, NetworkRejectContext rejectContext)
+        {
+            _action.ActionRejected(rejectContext);
+        }
+
         private Vector2Int[] ConvertNetworkArrayToArray(NetworkExecuteActionContext context)
         {
             Vector2Int[] array = new Vector2Int[context.TargetsCount];
@@ -187,5 +201,10 @@ namespace Echobay.NetworkSystem.Match
 
         [Networked, Capacity(10)]
         public NetworkArray<Vector2Int> TargetCells => default;
+    }
+
+    public struct NetworkRejectContext : INetworkStruct
+    {
+        public NetworkString<_32> ReasonText;
     }
 }

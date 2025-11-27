@@ -7,7 +7,7 @@ namespace Echobay.CardSystem
     [Serializable]
     public abstract class CardAction : ICardAction
     {
-        public event Action OnActionExecuted;
+        public event Action<ExecuteActionContext> OnActionExecuted;
 
         public abstract int Value { get; }
 
@@ -34,9 +34,9 @@ namespace Echobay.CardSystem
 
         public abstract void Execute(ExecuteActionContext context);
 
-        public virtual void OnExecuted()
+        public virtual void OnExecuted(ExecuteActionContext context)
         {
-            OnActionExecuted?.Invoke();
+            OnActionExecuted?.Invoke(context);
             Exit();
         }
     }

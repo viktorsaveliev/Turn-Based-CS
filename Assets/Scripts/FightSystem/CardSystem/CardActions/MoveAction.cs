@@ -33,7 +33,7 @@ namespace Echobay.CardSystem
                     void OnPathCompleted()
                     {
                         moveableOccupant.OnPathCompleted -= OnPathCompleted;
-                        OnExecuted();
+                        OnExecuted(context);
                     }
                 }
             }

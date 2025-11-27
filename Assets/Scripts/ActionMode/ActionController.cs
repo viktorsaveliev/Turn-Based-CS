@@ -1,5 +1,6 @@
 using Echobay.CardSystem;
 using Echobay.GridSystem;
+using Echobay.NetworkSystem.Match;
 using Echobay.UnitSystem;
 using System;
 using System.Collections.Generic;
@@ -12,6 +13,8 @@ namespace Echobay.ActionContext
     {
         public event Action OnUnitSelected;
         public event Action OnActionExecuted;
+        public event Action<NetworkRejectContext> OnActionRejected;
+
         public event Action<TargetSelectionMode> OnSelectionModeChanged;
 
         public event Action<IUnitCellOccupant, GridCell> OnMoveRequested;
@@ -89,7 +92,18 @@ namespace Echobay.ActionContext
             OnSelectionModeChanged?.Invoke(CurrentSelectionMode);
         }
 
-        public void SelectCellAction() => SetSelectionMode(new SelectCellMode()); 
+        public void SelectCellAction()
+        {
+            IsActionExecuting = false;
+            IsConfirmState = false;
+
+            SelectUnit(null);
+
+            _contextLinks.Grid.ResetGrid();
+
+            SetSelectionMode(new SelectCellMode());
+        }
+
         public void BlockActions() => SetSelectionMode(new BlockActionMode());
 
         private void OnTargetSelectionCompleted(IReadOnlyCollection<GridCell> cells)
@@ -98,15 +112,12 @@ namespace Echobay.ActionContext
 
             ExecuteActionContext context = new(SelectedAction, SelectedUnit, cells);
             RequestAction(SelectedCard.Data, context);
-            BlockActions();
+            //BlockActions();
         }
 
         public void ResetContext()
         {
-            IsConfirmState = false;
-
             _cardController.ClearCards();
-            _contextLinks.Grid.ResetGrid();
 
             SelectCellAction();
         }
@@ -136,17 +147,18 @@ namespace Echobay.ActionContext
             OnActionRequested?.Invoke(cardData, context);
         }
 
-        public void ActionExecuted()
+        public void ActionExecuted(ExecuteActionContext context)
         {
+            ApplyEffects(SelectedCard.Data, context);
             CancelAction();
 
             OnActionExecuted?.Invoke();
         }
 
-        public void ActionExecuted(ExecuteActionContext context)
+        public void ActionRejected(NetworkRejectContext context)
         {
-            ApplyEffects(SelectedCard.Data, context);
-            ActionExecuted();
+            IsActionExecuting = false;
+            OnActionRejected?.Invoke(context);
         }
 
         public void CancelAction()

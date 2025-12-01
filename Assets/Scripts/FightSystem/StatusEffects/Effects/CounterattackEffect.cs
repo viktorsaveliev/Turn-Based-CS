@@ -1,25 +1,27 @@
+using Cysharp.Threading.Tasks;
 using Echobay.CardSystem;
 using Echobay.UnitSystem;
-using System;
 using UnityEngine;
+using static Echobay.Contexts;
 
 namespace Echobay.FightSystem.StatusEffects
 {
     public class CounterattackEffect : TemporaryStatusEffect
     {
-        [field: SerializeReference] public CardAction Action { get; private set; }
-
-        public override void OnTakeDamage(StatusEffectableObject attacker)
+        public override async UniTask OnTakeDamage(ExecuteStatusEffectContext statusEffectContext)
         {
-            Unit attackerUnit = attacker as Unit;
+            Unit attackerUnit = statusEffectContext.Attacker as Unit;
             Unit unit = (Unit)StatusObject;
 
             ExecuteActionContext context = new(Action, unit, attackerUnit.CurrentCell);
-            Action.Execute(context);
+            await ExecuteAction(context);
+
+            await base.OnTakeDamage(statusEffectContext);
         }
 
-        public override void OnExpire()
+        protected override void OnExpire()
         {
+            base.OnExpire();
             Debug.Log($"{StatusObject.name} контратака закончилась");
         }
     }

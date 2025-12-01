@@ -44,6 +44,7 @@ namespace Echobay.MatchSystem
                 int unitID = _unitsCount;
 
                 unit.Init(player, unitID);
+                player.AddUnit(unit);
 
                 spawnData.SpawnCells[i].SetOccupant(unit);
 

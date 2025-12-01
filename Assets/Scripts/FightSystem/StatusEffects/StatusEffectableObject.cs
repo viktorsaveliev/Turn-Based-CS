@@ -1,30 +1,14 @@
-using Echobay.MatchSystem.TurnSystem;
+using Cysharp.Threading.Tasks;
 using System.Collections.Generic;
 using UnityEngine;
-using Zenject;
+using static Echobay.Contexts;
 
 namespace Echobay.FightSystem.StatusEffects
 {
-    public abstract class StatusEffectableObject : MonoBehaviour, ITurnObserver
+    public abstract class StatusEffectableObject : MonoBehaviour
     {
         private readonly HashSet<StatusEffect> _effects = new();
-        private ITurnMaster _master;
-
-        [Inject]
-        public void Construct(ITurnMaster turnMaster)
-        {
-            _master = turnMaster;
-        }
-
-        private void OnEnable()
-        {
-            _master?.Register(this);
-        }
-
-        private void OnDisable()
-        {
-            _master?.Unregister(this);
-        }
+        private const float DelayBetweenEffects = 1f;
 
         private void OnDestroy()
         {
@@ -36,8 +20,6 @@ namespace Echobay.FightSystem.StatusEffects
             _effects.Add(effect);
             effect.OnApply(this);
             effect.OnExpired += RemoveEffect;
-
-            Debug.Log($"Add effect {effect.GetType()}");
         }
 
         public void RemoveEffect(StatusEffect effect)
@@ -46,27 +28,30 @@ namespace Echobay.FightSystem.StatusEffects
             _effects.Remove(effect);
         }
 
-        public void OnTurnStarted()
+        public async UniTask OnTurnStarted(ExecuteStatusEffectContext context)
         {
             foreach (StatusEffect effect in _effects)
             {
-                effect.OnTurnStart();
+                await effect.OnTurnStart(context);
+                await UniTask.WaitForSeconds(DelayBetweenEffects);
             }
         }
 
-        public void OnTurnEnded()
+        public async UniTask OnTurnEnded(ExecuteStatusEffectContext context)
         {
             foreach (StatusEffect effect in _effects)
             {
-                effect.OnTurnEnd();
+                await effect.OnTurnEnd(context);
+                await UniTask.WaitForSeconds(DelayBetweenEffects);
             }
         }
 
-        public void OnTakeDamage(StatusEffectableObject attacker)
+        public async UniTask OnTakeDamage(ExecuteStatusEffectContext context)
         {
             foreach (StatusEffect effect in _effects)
             {
-                effect.OnTakeDamage(attacker);
+                await effect.OnTakeDamage(context);
+                await UniTask.WaitForSeconds(DelayBetweenEffects);
             }
         }
 

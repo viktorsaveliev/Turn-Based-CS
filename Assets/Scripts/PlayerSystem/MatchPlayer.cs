@@ -1,4 +1,6 @@
+using Echobay.UnitSystem;
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Echobay.PlayerSystem
@@ -9,10 +11,23 @@ namespace Echobay.PlayerSystem
 
         public PlayerConfig Data { get; }
         public int ActionPoints { get; private set; }
+        public IReadOnlyCollection<Unit> Units => _units;
+
+        private readonly HashSet<Unit> _units = new();
 
         public MatchPlayer(PlayerConfig config)
         {
             Data = config;
+        }
+
+        public void AddUnit(Unit unit)
+        {
+            _units.Add(unit);
+        }
+
+        public void RemoveUnit(Unit unit)
+        {
+            _units.Remove(unit);
         }
 
         public void SetActionPoints(int amount)

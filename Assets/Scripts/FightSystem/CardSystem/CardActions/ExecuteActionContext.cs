@@ -1,5 +1,6 @@
 using Echobay.GridSystem;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace Echobay.CardSystem
 {
@@ -11,6 +12,8 @@ namespace Echobay.CardSystem
         public readonly GridCell TargetCell => TargetCells[0];
         public int Damage { get; set; }
         public int Healing { get; set; }
+
+        public CancellationToken Token { get; set; }
 
         public ExecuteActionContext(ICardAction cardAction, ICellOccupant executer, GridCell targetCell, int damage = 0, int healing = 0)
         {
@@ -24,6 +27,7 @@ namespace Echobay.CardSystem
 
             Damage = damage;
             Healing = healing;
+            Token = default;
         }
 
         public ExecuteActionContext(ICardAction cardAction, ICellOccupant executer, IReadOnlyCollection<GridCell> targetCells, int damage = 0, int healing = 0)
@@ -39,6 +43,7 @@ namespace Echobay.CardSystem
 
             Damage = damage;
             Healing = healing;
+            Token = default;
         }
     }
 }

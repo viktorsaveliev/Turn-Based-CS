@@ -1,7 +1,6 @@
 using Cysharp.Threading.Tasks;
 using Echobay.GridSystem;
 using Echobay.PoolSystem;
-using Echobay.UnitSystem;
 using UnityEngine;
 
 namespace Echobay.CardSystem
@@ -33,19 +32,10 @@ namespace Echobay.CardSystem
             _particles = null;
         }
 
-        public override void Execute(ExecuteActionContext context)
+        protected override async UniTask ExecuteLogic(ExecuteActionContext context)
         {
             Enter();
-            AlternatingAttack(context);
-        }
 
-        private async void AlternatingAttack(ExecuteActionContext context)
-        {
-            foreach (AnimationCommand animation in AnimationCommands)
-            {
-                Unit unit = (Unit)context.Executer;
-                animation.Apply(unit.Animator);
-            }
             foreach (GridCell cell in context.TargetCells)
             {
                 PlayVFX(cell);
@@ -60,8 +50,6 @@ namespace Echobay.CardSystem
 
                 await UniTask.WaitForSeconds(_delayBetweenAttacks);
             }
-
-            OnExecuted(context);
         }
 
         private async void PlayVFX(GridCell cell)

@@ -1,12 +1,15 @@
 using Cysharp.Threading.Tasks;
+using Echobay.FightSystem.StatusEffects;
 using Echobay.NetworkSystem.Match;
 using Echobay.PlayerSystem;
+using Echobay.UnitSystem;
 using Fusion;
 using System;
 using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
 using Zenject;
+using static Echobay.Contexts;
 
 namespace Echobay.MatchSystem.TurnSystem
 {
@@ -86,25 +89,64 @@ namespace Echobay.MatchSystem.TurnSystem
 
         public void EndTurn()
         {
+            EndTurnTask().Forget();
+        }
+
+        private async UniTaskVoid EndTurnTask()
+        {
             _turnCts?.Cancel();
 
-            OnTurnEnded?.Invoke();
-            OnTurnLost?.Invoke(CurrentPlayer);
+            var player = CurrentPlayer;
+            OnTurnLost?.Invoke(player);
 
-            foreach (ITurnObserver observer in _observers)
-            {
-                observer.OnTurnEnded();
-            }
+            //RPC_BlockInputForAll(true);
+
+            await ProcessEndTurnEffects(player);
+
+            OnTurnEnded?.Invoke();
 
             _currentPlayerIndex++;
 
+            bool startNewRound = false;
             if (_currentPlayerIndex >= _matchMaster.Players.Count)
+            {
+                _currentPlayerIndex = 0;
+                startNewRound = true;
+            }
+
+            await UniTask.Delay(1000);
+
+            await ProcessStartTurnEffects(CurrentPlayer);
+
+            await UniTask.Delay(1000);
+
+            if (startNewRound)
             {
                 StartNewRound();
             }
             else
             {
                 StartTurn();
+            }
+        }
+
+        private async UniTask ProcessEndTurnEffects(MatchPlayer player)
+        {
+            ExecuteStatusEffectContext context = new(); // _turnCts.Token
+
+            foreach (Unit unit in player.Units)
+            {
+                await unit.OnTurnEnded(context);
+            }
+        }
+
+        private async UniTask ProcessStartTurnEffects(MatchPlayer player)
+        {
+            ExecuteStatusEffectContext context = new(); // _turnCts.Token
+
+            foreach (Unit unit in player.Units)
+            {
+                await unit.OnTurnStarted(context);
             }
         }
 

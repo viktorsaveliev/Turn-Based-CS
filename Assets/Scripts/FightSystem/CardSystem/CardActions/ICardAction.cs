@@ -1,3 +1,4 @@
+using Cysharp.Threading.Tasks;
 using System;
 
 namespace Echobay.CardSystem
@@ -10,7 +11,6 @@ namespace Echobay.CardSystem
         public void Enter();
         public void Exit();
         public bool CanExecute(ExecuteActionContext context);
-        public void Execute(ExecuteActionContext context);
-        public void OnExecuted(ExecuteActionContext context);
+        public UniTask Execute(ExecuteActionContext context);
     }
 }

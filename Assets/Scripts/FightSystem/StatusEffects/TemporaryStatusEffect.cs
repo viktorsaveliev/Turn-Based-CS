@@ -1,3 +1,4 @@
+using Echobay.CardSystem;
 using UnityEngine;
 
 namespace Echobay.FightSystem.StatusEffects
@@ -6,7 +7,13 @@ namespace Echobay.FightSystem.StatusEffects
     {
         [field: SerializeField, Range(1, 5)] public int RemainingTurns { get; private set; } = 1;
 
-        public bool Tick()
+        protected override void OnActionExecuted(ExecuteActionContext context)
+        {
+            base.OnActionExecuted(context);
+            Tick();
+        }
+
+        private bool Tick()
         {
             RemainingTurns--;
 

@@ -149,6 +149,8 @@ namespace Echobay.ActionContext
 
         public void ActionExecuted(ExecuteActionContext context)
         {
+            Debug.Log("2");
+
             ApplyEffects(SelectedCard.Data, context);
             CancelAction();
 

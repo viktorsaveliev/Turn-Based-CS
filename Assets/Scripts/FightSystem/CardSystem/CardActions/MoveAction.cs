@@ -1,3 +1,4 @@
+using Cysharp.Threading.Tasks;
 using Echobay.GridSystem;
 using System.Collections.Generic;
 using UnityEngine;
@@ -15,8 +16,12 @@ namespace Echobay.CardSystem
             _pathFinder = pathFinder;
         }
 
-        public override void Execute(ExecuteActionContext context)
+        protected override async UniTask ExecuteLogic(ExecuteActionContext context)
         {
+            /*using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(
+                   context.Cancellation,
+                   StatusObject.DestroyToken);*/
+
             if (context.Executer is ICellMoveableOccupant moveableOccupant)
             {
                 GridCell currentCell = moveableOccupant.CurrentCell;
@@ -25,16 +30,22 @@ namespace Echobay.CardSystem
                 if (path != null && path.Count > 0)
                 {
                     currentCell.SetOccupant(null);
-                    moveableOccupant.MoveAlongPath(path);
-                    context.TargetCell.SetOccupant(context.Executer);
 
-                    moveableOccupant.OnPathCompleted += OnPathCompleted;
+                    var tcs = new UniTaskCompletionSource();
 
                     void OnPathCompleted()
                     {
                         moveableOccupant.OnPathCompleted -= OnPathCompleted;
-                        OnExecuted(context);
+                        tcs.TrySetResult();
                     }
+
+                    moveableOccupant.OnPathCompleted += OnPathCompleted;
+
+                    moveableOccupant.MoveAlongPath(path);
+
+                    await tcs.Task; // .AttachExternalCancellation(linkedCts.Token)
+
+                    context.TargetCell.SetOccupant(context.Executer);
                 }
             }
         }

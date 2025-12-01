@@ -26,42 +26,28 @@ MonoBehaviour:
     rid: 6961099597943406653
   <Action>k__BackingField:
     rid: 6961100094785192200
-  <EffectsForTarget>k__BackingField:
-  - <StatusEffect>k__BackingField:
-      rid: 3402816042623041781
+  <EffectsForTarget>k__BackingField: []
   <EffectsForAttacker>k__BackingField:
   - <StatusEffect>k__BackingField:
       rid: 3402816042623041782
-  - <StatusEffect>k__BackingField:
-      rid: 3402816108012765250
   references:
     version: 2
     RefIds:
-    - rid: 3402816042623041781
-      type: {class: BurningEffect, ns: Echobay.FightSystem.StatusEffects, asm: Assembly-CSharp}
-      data:
-        <RemainingTurns>k__BackingField: 2
-        _damagePerTurn: 12
     - rid: 3402816042623041782
       type: {class: HealingEffect, ns: Echobay.FightSystem.StatusEffects, asm: Assembly-CSharp}
       data:
-        <RemainingTurns>k__BackingField: -3
-        _healPerTurn: 20
-    - rid: 3402816108012765250
-      type: {class: CounterattackEffect, ns: Echobay.FightSystem.StatusEffects, asm: Assembly-CSharp}
-      data:
-        <RemainingTurns>k__BackingField: 2
         <Action>k__BackingField:
-          rid: 3402816108012765251
-    - rid: 3402816108012765251
-      type: {class: AlternatingAttackAction, ns: Echobay.CardSystem, asm: Assembly-CSharp}
+          rid: 6073313044326776895
+        <RemainingTurns>k__BackingField: 0
+        _healPerTurn: 20
+    - rid: 6073313044326776895
+      type: {class: HealAction, ns: Echobay.CardSystem, asm: Assembly-CSharp}
       data:
-        <Key>k__BackingField: AlternatingAttackAction
-        AnimationCommands: []
-        DamageAmount: 10
-        _attackVFXPrefab: {fileID: 0}
-        _vfxAmount: 1
-        _delayBetweenAttacks: 1
+        <Key>k__BackingField: HealAction
+        _animationCommands: []
+        _executionDelay: 0.3
+        _postDelay: 0.2
+        _healAmount: 10
     - rid: 6961099597943406653
       type: {class: ConfirmPatternMode, ns: Echobay.ActionContext, asm: Assembly-CSharp}
       data:
@@ -71,17 +57,9 @@ MonoBehaviour:
       type: {class: AlternatingAttackAction, ns: Echobay.CardSystem, asm: Assembly-CSharp}
       data:
         <Key>k__BackingField: AlternatingAttackAction
-        AnimationCommands:
-        - _parameterName: Attack
-          _type: 0
-          _intValue: 0
-          _floatValue: 0
-          _boolValue: 0
-        - _parameterName: AttackID
-          _type: 1
-          _intValue: 0
-          _floatValue: 0
-          _boolValue: 0
+        _animationCommands: []
+        _executionDelay: 0.3
+        _postDelay: 0.2
         DamageAmount: 10
         _attackVFXPrefab: {fileID: 4208843959898764096, guid: 822f15fb62cbfd444b09772e08764a1f, type: 3}
         _vfxAmount: 4

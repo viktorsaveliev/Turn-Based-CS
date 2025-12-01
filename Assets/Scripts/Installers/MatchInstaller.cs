@@ -81,7 +81,6 @@ namespace Echobay.Installers
             Container.Bind<ActionController>().FromNew().AsSingle();
             Container.BindInterfacesAndSelfTo<TurnController>().FromNew().AsSingle();
             Container.BindInterfacesAndSelfTo<MatchController>().FromNew().AsSingle();
-            Container.BindInterfacesAndSelfTo<StatusEffectController>().FromNew().AsSingle();
             Container.BindInterfacesAndSelfTo<GridManager>().FromInstance(_gridManager).AsSingle();
             Container.BindInterfacesAndSelfTo<UnitSpawner>().FromInstance(_unitSpawner).AsSingle();
 

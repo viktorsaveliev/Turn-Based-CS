@@ -1,3 +1,4 @@
+using Cysharp.Threading.Tasks;
 using Echobay.FightSystem;
 using Echobay.GridSystem;
 using System;
@@ -11,15 +12,15 @@ namespace Echobay.CardSystem
 
         [SerializeField, Range(1, 500)] private int _healAmount = 10;
 
-        public override void Execute(ExecuteActionContext context)
+        protected override UniTask ExecuteLogic(ExecuteActionContext context)
         {
             foreach (GridCell cell in context.TargetCells)
             {
                 IDamageable damageable = cell.Occupant as IDamageable;
                 damageable.Health.RecoveryHealth(_healAmount);
             }
-            
-            OnExecuted(context);
+
+            return UniTask.CompletedTask;
         }
 
         public override bool CanExecute(ExecuteActionContext context)

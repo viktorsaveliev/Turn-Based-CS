@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace Echobay.FightSystem.StatusEffects
 {
-    public class DamageableStatusEffect : TemporaryStatusEffect
+    public abstract class DamageableStatusEffect : TemporaryStatusEffect
     {
         protected IDamageable Damageable { get; private set; }
 

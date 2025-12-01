@@ -1,27 +1,35 @@
+using Cysharp.Threading.Tasks;
+using Echobay.CardSystem;
+using Echobay.GridSystem;
 using System;
 using UnityEngine;
+using static Echobay.Contexts;
 
 namespace Echobay.FightSystem.StatusEffects
 {
     public class BurningEffect : DamageableStatusEffect
     {
-        [SerializeField, Range(1, 50)] private int _damagePerTurn = 1;
-
-        public override void OnTurnStart()
+        public override async UniTask OnTurnEnd(ExecuteStatusEffectContext statusEffectContext)
         {
-            base.OnTurnStart();
-
             if (Damageable != null)
             {
-                Damageable.Health.TakeDamage(_damagePerTurn);
-                Debug.Log($"{StatusObject.name} горит и получает {_damagePerTurn} урона!");
+                ICellOccupant cellOccupant = (ICellOccupant)Damageable;
+
+                ExecuteActionContext context = new(Action, cellOccupant, cellOccupant.CurrentCell, Action.Value)
+                {
+                    Token = statusEffectContext.Token
+                };
+
+                await ExecuteAction(context);
             }
+
+            await base.OnTurnEnd(statusEffectContext);
         }
 
-        public override void OnExpire()
+        protected override void OnExpire()
         {
+            base.OnExpire();
             Debug.Log($"{StatusObject.name} перестал гореть");
         }
     }
-
 }

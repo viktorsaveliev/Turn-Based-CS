@@ -1,3 +1,4 @@
+using Cysharp.Threading.Tasks;
 using Echobay.ActionContext;
 using Echobay.CardSystem;
 using Echobay.GridSystem;
@@ -44,12 +45,12 @@ namespace Echobay.NetworkSystem.Match
 
             var cells = ResolveCells(cellPositions);
 
-            ExecuteCardAction(unitId, cardData.Action, cells);
+            ExecuteCardAction(unitId, cardData.Action, cells).Forget();
         }
 
         public void ExecuteAction(int unitId, IReadOnlyCollection<GridCell> cells, ICardAction action)
         {
-            ExecuteCardAction(unitId, action, cells);
+            ExecuteCardAction(unitId, action, cells).Forget();
         }
 
         public void ExecuteMove(int unitId, Vector2Int targetCellPosition)
@@ -62,8 +63,8 @@ namespace Echobay.NetworkSystem.Match
 
             MoveAction action = new(_pathFinder);
 
-            var context = new ExecuteActionContext(action, unit, cell);
-            action.Execute(context);
+            ExecuteActionContext context = new(action, unit, cell);
+            action.Execute(context).Forget();
 
             RunOnLocalOwnedUnit(unit, () =>
             {
@@ -77,23 +78,27 @@ namespace Echobay.NetworkSystem.Match
             });
         }
 
-        private void ExecuteCardAction(int unitId, ICardAction action, IReadOnlyCollection<GridCell> cells)
+        private async UniTaskVoid ExecuteCardAction(int unitId, ICardAction action, IReadOnlyCollection<GridCell> cells)
         {
-            if (!TryGetUnit(unitId, out Unit unit))
-                return;
+            if (!TryGetUnit(unitId, out Unit unit)) return;
 
-            var context = new ExecuteActionContext(action, unit, cells);
-            action.Execute(context);
+            ExecuteActionContext context = new(action, unit, cells);
+            CardAction cardAction = (CardAction)action;
 
+            await cardAction.Execute(context);
+
+            Debug.Log("execute");
             RunOnLocalOwnedUnit(unit, () =>
             {
-                void OnCompleted(ExecuteActionContext context)
+                _actionController.ActionExecuted(context);
+                /*void OnCompleted(ExecuteActionContext context)
                 {
+                    Debug.Log("1");
                     action.OnActionExecuted -= OnCompleted;
                     _actionController.ActionExecuted(context);
                 }
 
-                action.OnActionExecuted += OnCompleted;
+                action.OnActionExecuted += OnCompleted;*/
             });
         }
 
@@ -118,7 +123,7 @@ namespace Echobay.NetworkSystem.Match
         private void RunOnLocalOwnedUnit(Unit unit, Action callback)
         {
             MatchPlayer localPlayer = _networkMatchController.LocalPlayer;
-            if (localPlayer == unit.Owner && localPlayer.ActionPoints > 0)
+            if (localPlayer == unit.Owner) //  && localPlayer.ActionPoints > 0
             {
                 callback?.Invoke();
             }

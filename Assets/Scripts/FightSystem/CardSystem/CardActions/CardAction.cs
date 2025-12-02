@@ -48,16 +48,14 @@ namespace Echobay.CardSystem
 
             if (_executionDelay > 0)
             {
-                Debug.Log("_executionDelay");
-                await UniTask.Delay(TimeSpan.FromSeconds(_executionDelay), cancellationToken: context.Token);
+                await UniTask.WaitForSeconds(_executionDelay, cancellationToken: context.Token);
             }
 
             await ExecuteLogic(context);
 
             if (_postDelay > 0)
             {
-                Debug.Log("_postDelay");
-                await UniTask.Delay(TimeSpan.FromSeconds(_postDelay), cancellationToken: context.Token);
+                await UniTask.WaitForSeconds(_postDelay, cancellationToken: context.Token);
             }
 
             OnActionExecuted?.Invoke(context);

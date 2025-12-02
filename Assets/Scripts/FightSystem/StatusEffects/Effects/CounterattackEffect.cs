@@ -11,18 +11,12 @@ namespace Echobay.FightSystem.StatusEffects
         public override async UniTask OnTakeDamage(ExecuteStatusEffectContext statusEffectContext)
         {
             Unit attackerUnit = statusEffectContext.Attacker as Unit;
-            Unit unit = (Unit)StatusObject;
+            Unit unit = (Unit)statusEffectContext.Executer;
 
-            ExecuteActionContext context = new(Action, unit, attackerUnit.CurrentCell);
+            ExecuteActionContext context = new(Data.Action, unit, attackerUnit.CurrentCell);
             await ExecuteAction(context);
 
             await base.OnTakeDamage(statusEffectContext);
-        }
-
-        protected override void OnExpire()
-        {
-            base.OnExpire();
-            Debug.Log($"{StatusObject.name} контратака закончилась");
         }
     }
 }

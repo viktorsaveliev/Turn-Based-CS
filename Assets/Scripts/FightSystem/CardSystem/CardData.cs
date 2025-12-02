@@ -25,8 +25,8 @@ namespace Echobay.CardSystem
         [field: SerializeReference] public TargetSelectionMode TargetingMode { get; private set; }
         [field: SerializeReference] public CardAction Action { get; private set; }
         [field: Header("Status Effects")]
-        [field: SerializeField] public StatusEffectSettings[] EffectsForTarget { get; private set; } = new StatusEffectSettings[0];
-        [field: SerializeField] public StatusEffectSettings[] EffectsForAttacker { get; private set; } = new StatusEffectSettings[0];
+        [field: SerializeField] public StatusEffectData[] EffectsForTarget { get; private set; } = new StatusEffectData[0];
+        [field: SerializeField] public StatusEffectData[] EffectsForAttacker { get; private set; } = new StatusEffectData[0];
     }
 
     [Serializable]

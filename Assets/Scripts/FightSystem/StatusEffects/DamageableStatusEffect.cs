@@ -1,15 +1,16 @@
 using UnityEngine;
+using static Echobay.Contexts;
 
 namespace Echobay.FightSystem.StatusEffects
 {
-    public abstract class DamageableStatusEffect : TemporaryStatusEffect
+    public abstract class DamageableStatusEffect : StatusEffect
     {
-        protected IDamageable Damageable { get; private set; }
+        /*protected IDamageable Damageable { get; private set; }
 
-        public override void OnApply(StatusEffectableObject statusObject)
+        public override void OnApply(ExecuteStatusEffectContext context)
         {
-            base.OnApply(statusObject);
-            Damageable = statusObject.GetComponent<IDamageable>();
-        }
+            base.OnApply(context);
+            Damageable = context.Executer.GetComponent<IDamageable>();
+        }*/
     }
 }

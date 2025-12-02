@@ -9,16 +9,18 @@ namespace Echobay.FightSystem.StatusEffects
     [Serializable]
     public abstract class StatusEffect
     {
-        public event Action<StatusEffect> OnExpired;
         public event Action<StatusEffect> OnExecuted;
 
-        [field: SerializeReference] protected CardAction Action { get; private set; }
+        public StatusEffectData Data { get; private set; }
 
-        protected StatusEffectableObject StatusObject { get; private set; }
+        public void Init(StatusEffectData data)
+        {
+            Data = data;
+        }
 
-        public virtual void OnApply(StatusEffectableObject statusObject)
-        { 
-            StatusObject = statusObject;
+        public virtual void OnApply(ExecuteStatusEffectContext context)
+        {
+            
         }
 
         public virtual UniTask OnTurnStart(ExecuteStatusEffectContext context)
@@ -36,14 +38,9 @@ namespace Echobay.FightSystem.StatusEffects
             return UniTask.CompletedTask;
         }
 
-        protected virtual void OnExpire()
-        {
-            OnExpired?.Invoke(this);
-        }
-
         protected async UniTask ExecuteAction(ExecuteActionContext context)
         {
-            await Action.Execute(context);
+            await Data.Action.Execute(context);
             OnActionExecuted(context);
         }
 

@@ -128,24 +128,32 @@ namespace Echobay.MatchSystem.TurnSystem
             {
                 StartTurn();
             }
+
+            Debug.Log("Started new..");
         }
 
         private async UniTask ProcessEndTurnEffects(MatchPlayer player)
         {
-            ExecuteStatusEffectContext context = new(); // _turnCts.Token
-
             foreach (Unit unit in player.Units)
             {
+                ExecuteStatusEffectContext context = new()
+                {
+                    Executer = unit
+                }; // _turnCts.Token
+
                 await unit.OnTurnEnded(context);
             }
         }
 
         private async UniTask ProcessStartTurnEffects(MatchPlayer player)
         {
-            ExecuteStatusEffectContext context = new(); // _turnCts.Token
-
             foreach (Unit unit in player.Units)
             {
+                ExecuteStatusEffectContext context = new()
+                {
+                    Executer = unit
+                }; // _turnCts.Token
+
                 await unit.OnTurnStarted(context);
             }
         }

@@ -1,4 +1,5 @@
 using Echobay.CardSystem;
+using Echobay.FightSystem.StatusEffects;
 using Echobay.GridSystem;
 using Echobay.NetworkSystem.Match;
 using Echobay.UnitSystem;
@@ -149,8 +150,6 @@ namespace Echobay.ActionContext
 
         public void ActionExecuted(ExecuteActionContext context)
         {
-            Debug.Log("2");
-
             ApplyEffects(SelectedCard.Data, context);
             CancelAction();
 
@@ -181,19 +180,19 @@ namespace Echobay.ActionContext
 
         private void ApplyEffects(CardData cardData, ExecuteActionContext context)
         {
-            foreach (StatusEffectSettings effect in cardData.EffectsForAttacker)
+            foreach (StatusEffectData effectData in cardData.EffectsForAttacker)
             {
                 Unit unit = (Unit)context.Executer;
-                unit.AddEffect(effect.StatusEffect);
+                unit.AddEffect(effectData);
             }
 
             foreach (GridCell cell in context.TargetCells)
             {
                 if (cell.Occupant is Unit unit)
                 {
-                    foreach (StatusEffectSettings effect in cardData.EffectsForTarget)
+                    foreach (StatusEffectData effectData in cardData.EffectsForTarget)
                     {
-                        unit.AddEffect(effect.StatusEffect);
+                        unit.AddEffect(effectData);
                     }
                 }
             }

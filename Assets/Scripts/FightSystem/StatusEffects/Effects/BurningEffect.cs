@@ -11,11 +11,11 @@ namespace Echobay.FightSystem.StatusEffects
     {
         public override async UniTask OnTurnEnd(ExecuteStatusEffectContext statusEffectContext)
         {
-            if (Damageable != null)
+            if (statusEffectContext.Executer != null)
             {
-                ICellOccupant cellOccupant = (ICellOccupant)Damageable;
+                ICellOccupant cellOccupant = (ICellOccupant)statusEffectContext.Executer;
 
-                ExecuteActionContext context = new(Action, cellOccupant, cellOccupant.CurrentCell, Action.Value)
+                ExecuteActionContext context = new(Data.Action, cellOccupant, cellOccupant.CurrentCell, Data.Action.Value)
                 {
                     Token = statusEffectContext.Token
                 };
@@ -24,12 +24,6 @@ namespace Echobay.FightSystem.StatusEffects
             }
 
             await base.OnTurnEnd(statusEffectContext);
-        }
-
-        protected override void OnExpire()
-        {
-            base.OnExpire();
-            Debug.Log($"{StatusObject.name} перестал гореть");
         }
     }
 }

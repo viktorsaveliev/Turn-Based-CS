@@ -1,4 +1,5 @@
 using System;
+using UnityEngine;
 
 namespace Echobay
 {
@@ -25,9 +26,15 @@ namespace Echobay
 
         public void SetHealth(int health)
         {
-            if (health < 1 || health > _maxHealth)
+            if (health < 1)
             {
-                throw new ArgumentException();
+                Debug.LogError($"[SetMaxHealth] Value = {health}");
+                return;
+            }
+
+            if (health > _maxHealth)
+            {
+                health = _maxHealth;
             }
 
             _health = health;
@@ -37,7 +44,8 @@ namespace Echobay
         {
             if (health < 1)
             {
-                throw new ArgumentException();
+                Debug.LogError($"[SetMaxHealth] Value = {health}");
+                return;
             }
 
             _maxHealth = health;
@@ -45,7 +53,17 @@ namespace Echobay
 
         public void TakeDamage(int damage)
         {
-            if (_health <= 0) return;
+            if (_health <= 0)
+            {
+                Debug.LogError("[TakeDamage] Unit is dead");
+                return;
+            }
+
+            if (damage <= 0)
+            {
+                Debug.LogError("[TakeDamage] Value = 0");
+                return;
+            }
 
             _health -= damage;
 
@@ -60,14 +78,23 @@ namespace Echobay
 
         public void RecoveryHealth(int value)
         {
-            if (_health <= 0) return;
+            if (_health <= 0)
+            {
+                Debug.LogError("[RecoveryHealth] Unit is dead");
+                return;
+            }
+
+            if (value <= 0)
+            {
+                Debug.LogError("[RecoveryHealth] Value = 0");
+                return;
+            }
 
             _health += value;
 
-            if (_health <= 0)
+            if (_health > MaxHealth)
             {
-                IsAlive = false;
-                OnDead?.Invoke();
+                _health = MaxHealth;
             }
 
             OnRecoveryHealth?.Invoke(value);

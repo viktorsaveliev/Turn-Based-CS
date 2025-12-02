@@ -28,26 +28,10 @@ MonoBehaviour:
     rid: 6961100094785192200
   <EffectsForTarget>k__BackingField: []
   <EffectsForAttacker>k__BackingField:
-  - <StatusEffect>k__BackingField:
-      rid: 3402816042623041782
+  - {fileID: 11400000, guid: b8461496a7f41c24e8e890afc83fc485, type: 2}
   references:
     version: 2
     RefIds:
-    - rid: 3402816042623041782
-      type: {class: HealingEffect, ns: Echobay.FightSystem.StatusEffects, asm: Assembly-CSharp}
-      data:
-        <Action>k__BackingField:
-          rid: 6073313044326776895
-        <RemainingTurns>k__BackingField: 0
-        _healPerTurn: 20
-    - rid: 6073313044326776895
-      type: {class: HealAction, ns: Echobay.CardSystem, asm: Assembly-CSharp}
-      data:
-        <Key>k__BackingField: HealAction
-        _animationCommands: []
-        _executionDelay: 0.3
-        _postDelay: 0.2
-        _healAmount: 10
     - rid: 6961099597943406653
       type: {class: ConfirmPatternMode, ns: Echobay.ActionContext, asm: Assembly-CSharp}
       data:

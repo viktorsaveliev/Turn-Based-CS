@@ -1,3 +1,4 @@
+using Cysharp.Threading.Tasks;
 using Echobay.ActionContext;
 using Echobay.MatchSystem.TurnSystem;
 using Echobay.PlayerSystem;
@@ -37,6 +38,8 @@ namespace Echobay.NetworkSystem.Match
             {
                 _turnController.OnActionPointsSpended += OnActionPointsSpended;
                 _turnController.OnRoundStarted += HandleRoundStarted;
+
+                _turnController.OnTurnLost += HandleTurnLost;
                 _turnController.OnTurnGained += HandleTurnGained;
             }
 
@@ -51,6 +54,8 @@ namespace Echobay.NetworkSystem.Match
             {
                 _turnController.OnActionPointsSpended -= OnActionPointsSpended;
                 _turnController.OnRoundStarted -= HandleRoundStarted;
+
+                _turnController.OnTurnLost -= HandleTurnLost;
                 _turnController.OnTurnGained -= HandleTurnGained;
             }
         }
@@ -110,10 +115,19 @@ namespace Echobay.NetworkSystem.Match
             CurrentRound = round;
         }
 
+        private void HandleTurnLost(MatchPlayer player)
+        {
+            Debug.LogWarning("HandleTurnLost");
+            RPC_ActivateTurnEndEffects(player.Data.PlayerRef);
+        }
+
         private void HandleTurnGained(MatchPlayer player)
         {
+            Debug.LogWarning("HandleTurnGained");
             CurrentPlayer = player.Data.PlayerRef;
+
             RPC_UpdatePlayerPoints(CurrentPlayer, player.ActionPoints);
+            RPC_ActivateTurnGainEffects(CurrentPlayer);
         }
 
         private void InitClientState()
@@ -133,6 +147,26 @@ namespace Echobay.NetworkSystem.Match
             else
             {
                 Debug.LogError($"[RPC_UpdatePlayerPoints] Dont find {playerRef}");
+            }
+        }
+
+        [Rpc(RpcSources.StateAuthority, RpcTargets.All, InvokeLocal = false)]
+        private void RPC_ActivateTurnEndEffects(PlayerRef playerRef)
+        {
+            if (_networkMatchController.TryGetMatchPlayerByRef(playerRef, out MatchPlayer matchPlayer))
+            {
+                Debug.LogWarning("RPC_ActivateTurnEndEffects");
+                _turnController.ProcessEndTurnEffects(matchPlayer).Forget();
+            }
+        }
+
+        [Rpc(RpcSources.StateAuthority, RpcTargets.All, InvokeLocal = false)]
+        private void RPC_ActivateTurnGainEffects(PlayerRef playerRef)
+        {
+            if (_networkMatchController.TryGetMatchPlayerByRef(playerRef, out MatchPlayer matchPlayer))
+            {
+                Debug.LogWarning("ProcessStartTurnEffects");
+                _turnController.ProcessStartTurnEffects(matchPlayer).Forget();
             }
         }
     }

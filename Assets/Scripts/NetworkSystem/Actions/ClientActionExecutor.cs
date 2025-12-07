@@ -1,6 +1,7 @@
 using Cysharp.Threading.Tasks;
 using Echobay.ActionContext;
 using Echobay.CardSystem;
+using Echobay.FightSystem.StatusEffects;
 using Echobay.GridSystem;
 using Echobay.MatchSystem;
 using Echobay.PlayerSystem;
@@ -45,12 +46,7 @@ namespace Echobay.NetworkSystem.Match
 
             var cells = ResolveCells(cellPositions);
 
-            ExecuteCardAction(unitId, cardData.Action, cells).Forget();
-        }
-
-        public void ExecuteAction(int unitId, IReadOnlyCollection<GridCell> cells, ICardAction action)
-        {
-            ExecuteCardAction(unitId, action, cells).Forget();
+            ExecuteCardAction(unitId, cardData, cells).Forget();
         }
 
         public void ExecuteMove(int unitId, Vector2Int targetCellPosition)
@@ -78,16 +74,17 @@ namespace Echobay.NetworkSystem.Match
             });
         }
 
-        private async UniTaskVoid ExecuteCardAction(int unitId, ICardAction action, IReadOnlyCollection<GridCell> cells)
+        private async UniTaskVoid ExecuteCardAction(int unitId, CardData cardData, IReadOnlyCollection<GridCell> cells)
         {
             if (!TryGetUnit(unitId, out Unit unit)) return;
 
-            ExecuteActionContext context = new(action, unit, cells);
-            CardAction cardAction = (CardAction)action;
+            ExecuteActionContext context = new(cardData.Action, unit, cells);
+            CardAction cardAction = cardData.Action;
 
             await cardAction.Execute(context);
 
-            Debug.Log("execute");
+            ApplyEffects(cardData, context);
+
             RunOnLocalOwnedUnit(unit, () =>
             {
                 _actionController.ActionExecuted(context);
@@ -100,6 +97,26 @@ namespace Echobay.NetworkSystem.Match
 
                 action.OnActionExecuted += OnCompleted;*/
             });
+        }
+
+        private void ApplyEffects(CardData cardData, ExecuteActionContext context)
+        {
+            foreach (StatusEffectData effectData in cardData.EffectsForAttacker)
+            {
+                Unit unit = (Unit)context.Executer;
+                unit.AddEffect(effectData);
+            }
+
+            foreach (GridCell cell in context.TargetCells)
+            {
+                if (cell.Occupant is Unit unit)
+                {
+                    foreach (StatusEffectData effectData in cardData.EffectsForTarget)
+                    {
+                        unit.AddEffect(effectData);
+                    }
+                }
+            }
         }
 
         private bool TryGetUnit(int unitId, out Unit unit)

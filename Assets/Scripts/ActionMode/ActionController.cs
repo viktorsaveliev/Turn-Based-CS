@@ -150,7 +150,6 @@ namespace Echobay.ActionContext
 
         public void ActionExecuted(ExecuteActionContext context)
         {
-            ApplyEffects(SelectedCard.Data, context);
             CancelAction();
 
             OnActionExecuted?.Invoke();
@@ -176,26 +175,6 @@ namespace Echobay.ActionContext
             SelectedCard = null;
 
             IsActionExecuting = false;
-        }
-
-        private void ApplyEffects(CardData cardData, ExecuteActionContext context)
-        {
-            foreach (StatusEffectData effectData in cardData.EffectsForAttacker)
-            {
-                Unit unit = (Unit)context.Executer;
-                unit.AddEffect(effectData);
-            }
-
-            foreach (GridCell cell in context.TargetCells)
-            {
-                if (cell.Occupant is Unit unit)
-                {
-                    foreach (StatusEffectData effectData in cardData.EffectsForTarget)
-                    {
-                        unit.AddEffect(effectData);
-                    }
-                }
-            }
         }
 
         private void OnClickOnCard(Card card)

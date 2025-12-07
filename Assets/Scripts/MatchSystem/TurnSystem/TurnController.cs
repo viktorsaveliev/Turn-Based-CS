@@ -92,14 +92,38 @@ namespace Echobay.MatchSystem.TurnSystem
             EndTurnTask().Forget();
         }
 
+        public async UniTask ProcessEndTurnEffects(MatchPlayer player)
+        {
+            foreach (Unit unit in player.Units)
+            {
+                ExecuteStatusEffectContext context = new()
+                {
+                    Executer = unit
+                };
+
+                await unit.OnTurnEnded(context);
+            }
+        }
+
+        public async UniTask ProcessStartTurnEffects(MatchPlayer player)
+        {
+            foreach (Unit unit in player.Units)
+            {
+                ExecuteStatusEffectContext context = new()
+                {
+                    Executer = unit
+                };
+
+                await unit.OnTurnStarted(context);
+            }
+        }
+
         private async UniTaskVoid EndTurnTask()
         {
             _turnCts?.Cancel();
 
             var player = CurrentPlayer;
             OnTurnLost?.Invoke(player);
-
-            //RPC_BlockInputForAll(true);
 
             await ProcessEndTurnEffects(player);
 
@@ -127,34 +151,6 @@ namespace Echobay.MatchSystem.TurnSystem
             else
             {
                 StartTurn();
-            }
-
-            Debug.Log("Started new..");
-        }
-
-        private async UniTask ProcessEndTurnEffects(MatchPlayer player)
-        {
-            foreach (Unit unit in player.Units)
-            {
-                ExecuteStatusEffectContext context = new()
-                {
-                    Executer = unit
-                }; // _turnCts.Token
-
-                await unit.OnTurnEnded(context);
-            }
-        }
-
-        private async UniTask ProcessStartTurnEffects(MatchPlayer player)
-        {
-            foreach (Unit unit in player.Units)
-            {
-                ExecuteStatusEffectContext context = new()
-                {
-                    Executer = unit
-                }; // _turnCts.Token
-
-                await unit.OnTurnStarted(context);
             }
         }
 

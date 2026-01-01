@@ -17,7 +17,7 @@ namespace Echobay.CardSystem
             foreach (GridCell cell in context.TargetCells)
             {
                 IDamageable damageable = cell.Occupant as IDamageable;
-                damageable.Health.RecoveryHealth(_healAmount);
+                damageable.RecoveryHealth(_healAmount);
             }
 
             return UniTask.CompletedTask;

@@ -48,6 +48,8 @@ namespace Echobay.Installers
             _actionController.Init();
             _gridTurnActivator.Init();
 
+            _cardController.Init(_actionController);
+
             if (_networkProvider.Runner != null && _networkProvider.Runner.IsServer)
             {
                 _matchController.Init();

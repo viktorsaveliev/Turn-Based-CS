@@ -17,7 +17,8 @@ namespace Echobay.FightSystem.StatusEffects
 
                 ExecuteActionContext context = new(Data.Action, cellOccupant, cellOccupant.CurrentCell, Data.Action.Value)
                 {
-                    Token = statusEffectContext.Token
+                    Token = statusEffectContext.Token,
+                    CanWorkOnEnemyTurn = CanWorkOnEnemyTurn
                 };
 
                 await ExecuteAction(context);

@@ -6,7 +6,7 @@ using static Echobay.Contexts;
 
 namespace Echobay.FightSystem.StatusEffects
 {
-    public abstract class StatusEffectableObject : MonoBehaviour
+    public abstract class StatusEffectableObject : DamageableObject
     {
         private readonly List<CharacterEffect> _effects = new();
         private const int DelayBetweenEffects = 1;

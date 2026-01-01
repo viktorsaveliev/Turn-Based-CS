@@ -36,11 +36,15 @@ namespace Echobay.NetworkSystem.Match
         {
             if (Object.HasStateAuthority)
             {
+                _turnController.OnTick += OnTick;
+
                 _turnController.OnActionPointsSpended += OnActionPointsSpended;
                 _turnController.OnRoundStarted += HandleRoundStarted;
 
-                _turnController.OnTurnLost += HandleTurnLost;
-                _turnController.OnTurnGained += HandleTurnGained;
+                _turnController.OnActivateEndTurnEffects += ActivateEndTurnEffects;
+                _turnController.OnActivateStartTurnEffects += ActivateStartTurnEffects;
+
+                _turnController.OnTurnGained += OnTurnGained;
             }
 
             _changeDetector = GetChangeDetector(ChangeDetector.Source.SimulationState);
@@ -52,11 +56,15 @@ namespace Echobay.NetworkSystem.Match
         {
             if (Object.HasStateAuthority)
             {
+                _turnController.OnTick -= OnTick;
+
                 _turnController.OnActionPointsSpended -= OnActionPointsSpended;
                 _turnController.OnRoundStarted -= HandleRoundStarted;
 
-                _turnController.OnTurnLost -= HandleTurnLost;
-                _turnController.OnTurnGained -= HandleTurnGained;
+                _turnController.OnActivateEndTurnEffects -= ActivateEndTurnEffects;
+                _turnController.OnActivateStartTurnEffects -= ActivateStartTurnEffects;
+
+                _turnController.OnTurnGained -= OnTurnGained;
             }
         }
 
@@ -103,6 +111,11 @@ namespace Echobay.NetworkSystem.Match
             }
         }
 
+        private void OnTick()
+        {
+            TimeRemaining = _turnController.TimeRemaining;
+        }
+
         private void OnActionPointsSpended(MatchPlayer player, int spendedPoints)
         {
             if (!Object.HasStateAuthority) return;
@@ -115,19 +128,21 @@ namespace Echobay.NetworkSystem.Match
             CurrentRound = round;
         }
 
-        private void HandleTurnLost(MatchPlayer player)
+        private void OnTurnGained(MatchPlayer player)
         {
-            Debug.LogWarning("HandleTurnLost");
-            RPC_ActivateTurnEndEffects(player.Data.PlayerRef);
-        }
-
-        private void HandleTurnGained(MatchPlayer player)
-        {
-            Debug.LogWarning("HandleTurnGained");
             CurrentPlayer = player.Data.PlayerRef;
 
             RPC_UpdatePlayerPoints(CurrentPlayer, player.ActionPoints);
-            RPC_ActivateTurnGainEffects(CurrentPlayer);
+        }
+
+        private void ActivateEndTurnEffects(MatchPlayer player)
+        {
+            RPC_ActivateTurnEndEffects(player.Data.PlayerRef);
+        }
+
+        private void ActivateStartTurnEffects(MatchPlayer player)
+        {
+            RPC_ActivateTurnGainEffects(player.Data.PlayerRef);
         }
 
         private void InitClientState()
@@ -155,7 +170,6 @@ namespace Echobay.NetworkSystem.Match
         {
             if (_networkMatchController.TryGetMatchPlayerByRef(playerRef, out MatchPlayer matchPlayer))
             {
-                Debug.LogWarning("RPC_ActivateTurnEndEffects");
                 _turnController.ProcessEndTurnEffects(matchPlayer).Forget();
             }
         }
@@ -165,7 +179,6 @@ namespace Echobay.NetworkSystem.Match
         {
             if (_networkMatchController.TryGetMatchPlayerByRef(playerRef, out MatchPlayer matchPlayer))
             {
-                Debug.LogWarning("ProcessStartTurnEffects");
                 _turnController.ProcessStartTurnEffects(matchPlayer).Forget();
             }
         }

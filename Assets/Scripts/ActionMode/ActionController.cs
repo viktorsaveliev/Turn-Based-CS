@@ -1,8 +1,6 @@
 using Echobay.CardSystem;
-using Echobay.FightSystem.StatusEffects;
 using Echobay.GridSystem;
 using Echobay.NetworkSystem.Match;
-using Echobay.UnitSystem;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -29,13 +27,11 @@ namespace Echobay.ActionContext
         public Card SelectedCard { get; private set; }
 
         private readonly ActionContextLinks _contextLinks;
-        private readonly CardController _cardController;
 
         [Inject]
-        public ActionController(ActionContextLinks actionContextLinks, CardController cardController) 
+        public ActionController(ActionContextLinks actionContextLinks) 
         {
             _contextLinks = actionContextLinks;
-            _cardController = cardController;
         }
 
         public void Init()
@@ -46,9 +42,9 @@ namespace Echobay.ActionContext
             _contextLinks.InteractHandler.OnPointExit += OnCellExit;
             _contextLinks.InteractHandler.OnInteract += OnCellInteracted;
 
-            _cardController.OnClickOnCard += OnClickOnCard;
-            _cardController.OnCardSelected += OnCardSelected;
-            _cardController.OnCardDeselected += OnCardDeselected;
+            _contextLinks.CardController.OnClickOnCard += OnClickOnCard;
+            _contextLinks.CardController.OnCardSelected += OnCardSelected;
+            _contextLinks.CardController.OnCardDeselected += OnCardDeselected;
 
             BlockActions();
         }
@@ -64,9 +60,9 @@ namespace Echobay.ActionContext
             _contextLinks.InteractHandler.OnPointExit -= OnCellExit;
             _contextLinks.InteractHandler.OnInteract -= OnCellInteracted;
 
-            _cardController.OnClickOnCard -= OnClickOnCard;
-            _cardController.OnCardSelected -= OnCardSelected;
-            _cardController.OnCardDeselected -= OnCardDeselected;
+            _contextLinks.CardController.OnClickOnCard -= OnClickOnCard;
+            _contextLinks.CardController.OnCardSelected -= OnCardSelected;
+            _contextLinks.CardController.OnCardDeselected -= OnCardDeselected;
         }
 
         public void SelectUnit(IUnitCellOccupant cellOccupant)
@@ -86,7 +82,7 @@ namespace Echobay.ActionContext
             CurrentSelectionMode = actionContext;
             CurrentSelectionMode.OnCompleted += OnTargetSelectionCompleted;
 
-            Debug.Log($"Context set to: {CurrentSelectionMode.GetType().Name}");
+            //Debug.Log($"Context set to: {CurrentSelectionMode.GetType().Name}");
 
             CurrentSelectionMode.Enter(_contextLinks);
 
@@ -113,12 +109,11 @@ namespace Echobay.ActionContext
 
             ExecuteActionContext context = new(SelectedAction, SelectedUnit, cells);
             RequestAction(SelectedCard.Data, context);
-            //BlockActions();
         }
 
         public void ResetContext()
         {
-            _cardController.ClearCards();
+            _contextLinks.CardController.ClearCards();
 
             SelectCellAction();
         }
@@ -229,7 +224,6 @@ namespace Echobay.ActionContext
         {
             if (interactable is GridCell cell)
             {
-                _cardController.OnCellSelected(interactable);
                 CurrentSelectionMode?.HandleCellClick(cell);
             }
         }

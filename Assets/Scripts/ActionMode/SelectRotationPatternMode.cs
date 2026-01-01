@@ -40,7 +40,6 @@ namespace Echobay.ActionContext
             {
                 if (oldCell == null)
                 {
-                    Debug.LogError($"{oldCell} in CellList is null");
                     continue;
                 }
 

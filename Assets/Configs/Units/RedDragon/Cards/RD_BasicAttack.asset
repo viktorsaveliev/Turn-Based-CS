@@ -21,7 +21,6 @@ MonoBehaviour:
   <MaxDistanceByCharacter>k__BackingField: 3
   <EnergyGain>k__BackingField: 1
   <Prefab>k__BackingField: {fileID: 3854179437147671246, guid: 91aea69e5fc1d4f489fc4dd35d8ac4de, type: 3}
-  <DamageType>k__BackingField: {fileID: 11400000, guid: e28300c88438d7c44962ada68996e38d, type: 2}
   <TargetingMode>k__BackingField:
     rid: 6961099597943406653
   <Action>k__BackingField:
@@ -44,6 +43,7 @@ MonoBehaviour:
         _animationCommands: []
         _executionDelay: 0.3
         _postDelay: 0.2
+        <DamageType>k__BackingField: {fileID: 11400000, guid: 7ca8ec8e6bf3c104a90d62da285b908d, type: 2}
         DamageAmount: 10
         _attackVFXPrefab: {fileID: 4208843959898764096, guid: 822f15fb62cbfd444b09772e08764a1f, type: 3}
         _vfxAmount: 4

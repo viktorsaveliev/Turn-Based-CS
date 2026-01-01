@@ -16,14 +16,16 @@ namespace Echobay.NetworkSystem.Match
         private readonly UnitSpawner _spawner;
         private readonly CardsDatabase _cardsDb;
         private readonly TurnController _turnController;
+        private readonly GameplayData _gameplayData;
 
         [Inject]
-        public ServerActionHandler(IGrid grid, UnitSpawner spawner, CardsDatabase cardsDb, TurnController turnController)
+        public ServerActionHandler(IGrid grid, UnitSpawner spawner, CardsDatabase cardsDb, TurnController turnController, GameplayData gameplayData)
         {
             _grid = grid;
             _spawner = spawner;
             _cardsDb = cardsDb;
             _turnController = turnController;
+            _gameplayData = gameplayData;
         }
 
         public bool HandleAction(NetworkExecuteActionContext networkContext, Vector2Int[] cellPositions, out NetworkRejectContext rejectContext)
@@ -62,9 +64,11 @@ namespace Echobay.NetworkSystem.Match
             }
 
             MatchPlayer player = unit.Owner;
+            rejectContext.PlayerRef = player.Data.PlayerRef;
+
             int requiredPoints = cardData.RequiredActionPoints;
 
-            if (_turnController.CurrentPlayer != player)
+            if (_turnController.CurrentPlayer != player && !context.CanWorkOnEnemyTurn)
             {
                 rejectContext.ReasonText = $"Not your turn {player.Data.Name}";
                 return false;
@@ -88,16 +92,37 @@ namespace Echobay.NetworkSystem.Match
             return action.CanExecute(context);
         }
 
-        public bool HandleMove(int unitId, Vector2Int targetCell)
+        public bool HandleMove(int unitId, Vector2Int targetCell, out NetworkRejectContext rejectContext)
         {
+            rejectContext = new();
+            
             if (!_spawner.TryGetUnitByID(unitId, out Unit unit))
+            {
+                rejectContext.ReasonText = "Can't find target unit";
                 return false;
+            }
+            else
+            {
+                rejectContext.PlayerRef = unit.Owner.Data.PlayerRef;
+            }
 
             if (!_grid.TryGetCellByPosition(targetCell, out GridCell cell))
+            {
+                rejectContext.ReasonText = "Can't find target cell";
                 return false;
+            }
+
+            if (!_turnController.TrySpendPoints(unit.Owner, _gameplayData.SpendPointsForMovement))
+            {
+                rejectContext.ReasonText = "Not enough action points";
+                return false;
+            }
 
             if (!CanMove(unit, cell))
+            {
+                rejectContext.ReasonText = "Can't move";
                 return false;
+            }
 
             return true;
         }

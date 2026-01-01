@@ -54,6 +54,7 @@ namespace IndieMarc.CurvedLine
 
         public void Hide()
         {
+            if (render == null) return;
             render.enabled = false;
         }
 

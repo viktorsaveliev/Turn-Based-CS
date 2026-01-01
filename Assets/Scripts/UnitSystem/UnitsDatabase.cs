@@ -1,7 +1,10 @@
 using Sirenix.OdinInspector;
 using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine;
+
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace Echobay.UnitSystem
 {
@@ -52,7 +55,7 @@ namespace Echobay.UnitSystem
         private void FindAllObjectData()
         {
             _units.Clear();
-            string[] guids = AssetDatabase.FindAssets("t:UnitData");
+            string[] guids = AssetDatabase.FindAssets($"t:{nameof(UnitData)}");
 
             foreach (string guid in guids)
             {

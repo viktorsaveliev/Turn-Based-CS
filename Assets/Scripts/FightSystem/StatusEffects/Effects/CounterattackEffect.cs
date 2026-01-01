@@ -13,7 +13,11 @@ namespace Echobay.FightSystem.StatusEffects
             Unit attackerUnit = statusEffectContext.Attacker as Unit;
             Unit unit = (Unit)statusEffectContext.Executer;
 
-            ExecuteActionContext context = new(Data.Action, unit, attackerUnit.CurrentCell);
+            ExecuteActionContext context = new(Data.Action, unit, attackerUnit.CurrentCell)
+            {
+                CanWorkOnEnemyTurn = CanWorkOnEnemyTurn
+            };
+
             await ExecuteAction(context);
 
             await base.OnTakeDamage(statusEffectContext);

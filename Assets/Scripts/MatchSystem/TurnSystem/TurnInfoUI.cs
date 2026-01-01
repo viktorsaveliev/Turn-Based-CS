@@ -1,3 +1,4 @@
+using Echobay.NetworkSystem.Match;
 using Echobay.UISystem;
 using System.Collections;
 using TMPro;
@@ -6,23 +7,19 @@ using Zenject;
 
 namespace Echobay.MatchSystem.TurnSystem
 {
-    public class TurnInfoUI : PanelUI, ITurnObserver
+    public class TurnInfoUI : PanelUI
     {
         [SerializeField] private TMP_Text _timeText;
         [SerializeField] private TMP_Text _turnText;
 
-        private ITurnMaster _turnMaster;
         private GameplayData _gameplayData;
-
-        private Coroutine _coroutine;
-
-        private bool _isActive;
+        private NetworkTurnController _networkTurnController;
 
         [Inject]
-        public void Construct(ITurnMaster turnMaster, GameplayData gameplayData)
+        public void Construct(GameplayData gameplayData, NetworkTurnController networkTurnController)
         {
-            _turnMaster = turnMaster;
             _gameplayData = gameplayData;
+            _networkTurnController = networkTurnController;
         }
 
         private void Awake()
@@ -32,43 +29,24 @@ namespace Echobay.MatchSystem.TurnSystem
 
         private void OnEnable()
         {
-            _turnMaster.Register(this);
+            _networkTurnController.OnTimeChanged += UpdateTimer;
+            _networkTurnController.OnRoundChanged += OnTurnStarted;
         }
 
         private void OnDisable()
         {
-            _turnMaster.Unregister(this);
+            _networkTurnController.OnTimeChanged += UpdateTimer;
+            _networkTurnController.OnRoundChanged -= OnTurnStarted;
         }
 
-        public void OnTurnStarted()
+        private void OnTurnStarted(int round)
         {
-            if (_coroutine != null)
-            {
-                StopCoroutine(_coroutine);
-            }
-
-            _isActive = true;
-            _coroutine = StartCoroutine(Tick());
-
-            _turnText.text = $"Round {_turnMaster.CurrentRound}";
-            UpdateTimer();
+            _turnText.text = $"Round {_networkTurnController.CurrentRound}";
         }
 
-        public void OnTurnEnded()
+        private void UpdateTimer(int currentTime)
         {
-            if (_coroutine != null)
-            {
-                StopCoroutine(_coroutine);
-            }
-
-            _isActive = false;
-
-            UpdateTimer();
-        }
-
-        private void UpdateTimer()
-        {
-            _timeText.text = $"{FormatTime(_turnMaster.TimeRemaining)}";
+            _timeText.text = $"{FormatTime(currentTime)}";
         }
 
         private IEnumerator StartMatchDelay()
@@ -84,18 +62,6 @@ namespace Echobay.MatchSystem.TurnSystem
                 yield return new WaitForSeconds(1);
 
                 delay--;
-            }
-        }
-
-        private IEnumerator Tick()
-        {
-            WaitForSeconds waitForSeconds = new(1);
-
-            while (_isActive)
-            {
-                UpdateTimer();
-
-                yield return waitForSeconds;
             }
         }
 

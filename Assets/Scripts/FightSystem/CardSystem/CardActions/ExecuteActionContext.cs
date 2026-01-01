@@ -12,6 +12,7 @@ namespace Echobay.CardSystem
         public readonly GridCell TargetCell => TargetCells[0];
         public int Damage { get; set; }
         public int Healing { get; set; }
+        public bool CanWorkOnEnemyTurn { get; set; }
 
         public CancellationToken Token { get; set; }
 
@@ -28,6 +29,8 @@ namespace Echobay.CardSystem
             Damage = damage;
             Healing = healing;
             Token = default;
+
+            CanWorkOnEnemyTurn = false;
         }
 
         public ExecuteActionContext(ICardAction cardAction, ICellOccupant executer, IReadOnlyCollection<GridCell> targetCells, int damage = 0, int healing = 0)
@@ -44,6 +47,8 @@ namespace Echobay.CardSystem
             Damage = damage;
             Healing = healing;
             Token = default;
+
+            CanWorkOnEnemyTurn = false;
         }
     }
 }

@@ -58,6 +58,7 @@ namespace Echobay.GridSystem
 
         public void ClearPath()
         {
+            if (_curvedLine2D == null || _curvedLine2D.paths == null) return;
             _curvedLine2D.paths = null;
             _curvedLine2D.Hide();
         }

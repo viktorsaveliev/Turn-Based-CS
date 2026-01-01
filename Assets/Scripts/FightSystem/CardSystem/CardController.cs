@@ -1,3 +1,4 @@
+using Echobay.ActionContext;
 using Echobay.GridSystem;
 using Echobay.InputSystem;
 using Echobay.UnitSystem;
@@ -21,6 +22,7 @@ namespace Echobay.CardSystem
 
         private readonly List<Card> _cardPool = new();
         private InputData _inputData;
+        private ActionController _controller;
 
         [Inject]
         public void Construct(InputData inputData)
@@ -36,9 +38,20 @@ namespace Echobay.CardSystem
         private void OnDisable()
         {
             _inputData.OnCanceled -= DeselectCard;
-
+            
             DeselectCard();
             ClearCards();
+        }
+
+        private void OnDestroy()
+        {
+            _controller.OnUnitSelected -= OnUnitSelected;
+        }
+
+        public void Init(ActionController controller)
+        {
+            _controller = controller;
+            _controller.OnUnitSelected += OnUnitSelected;
         }
 
         public void ClearCards()
@@ -49,21 +62,20 @@ namespace Echobay.CardSystem
                 Destroy(card.gameObject);
             }
 
-            //DeselectCard();
             SelectedCard = null;
             _cardPool.Clear();
         }
 
-        public void OnCellSelected(IInteractable interactable)
+        private void OnUnitSelected()
         {
-            GridCell gridCell = interactable as GridCell;
-
-            if (SelectedCard == null)
+            if (_controller.SelectedUnit == null)
             {
-                if (gridCell != null && gridCell.IsOccupied && gridCell.Occupant is Unit unit)
-                {
-                    CreateCards(unit);
-                }
+                ClearCards();
+            }
+            else
+            {
+                Unit unit = (Unit)_controller.SelectedUnit;
+                CreateCards(unit);
             }
         }
 

@@ -1,7 +1,7 @@
 using Echobay.FightSystem;
+using Echobay.FightSystem.DamageType;
 using Echobay.FightSystem.StatusEffects;
 using Echobay.GridSystem;
-using Echobay.MatchSystem.TurnSystem;
 using Echobay.PlayerSystem;
 using Sirenix.OdinInspector;
 using System;
@@ -16,7 +16,6 @@ namespace Echobay.UnitSystem
     {
         public GridCell CurrentCell { get; set; }
 
-        public HealthSystem Health { get; private set; }
         public MatchPlayer Owner { get; private set; }
 
         public event Action OnPathCompleted;
@@ -24,6 +23,8 @@ namespace Echobay.UnitSystem
         [field: SerializeField, ReadOnly] public int UnitID { get; private set; }
         [field: SerializeField] public int TeamID { get; private set; }
         [field: SerializeField] public Animator Animator { get; private set; }
+        [field: SerializeField] public Transform VisualRoot { get; private set; }
+        public DamageModifiers DamageModifiers => _data.DamageModifiers;
 
         [SerializeField] private UnitData _data;
 
@@ -36,7 +37,8 @@ namespace Echobay.UnitSystem
             UnitID = unitID;
             TeamID = owner.Data.TeamID;
 
-            Health = new HealthSystem(_data.MaxHealth);
+            SetMaxHealth(_data.MaxHealth);
+            SetHealth(_data.MaxHealth);
         }
 
         public void MoveAlongPath(List<GridCell> path)
@@ -47,6 +49,18 @@ namespace Echobay.UnitSystem
             }
 
             _moveRoutine = StartCoroutine(MoveRoutine(path));
+
+            PlayAnimation(_data.MoveAnimation);
+        }
+
+        public void PlayAnimation(AnimationCommand[] commands)
+        {
+            if (commands == null || commands.Length <= 0) return;
+
+            foreach (var animation in commands)
+            {
+                animation.Apply(Animator);
+            }
         }
 
         #region System Management
@@ -65,6 +79,21 @@ namespace Echobay.UnitSystem
             return _systems.OfType<A>().FirstOrDefault();
         }
         #endregion
+
+        public override void TakeDamage(DamageContext context)
+        {
+            int damage = context.DamageValue;
+
+            foreach (DamageModifier damageModifier in _data.DamageModifiers.Modifiers)
+            {
+                if (damageModifier.DamageType != context.DamageType) continue;
+                damage = Mathf.RoundToInt(damage * damageModifier.Resistance);
+                break;
+            }
+
+            context.DamageValue = damage;
+            base.TakeDamage(context);
+        }
 
         private IEnumerator MoveRoutine(List<GridCell> path)
         {

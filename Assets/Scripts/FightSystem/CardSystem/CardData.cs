@@ -21,7 +21,6 @@ namespace Echobay.CardSystem
         [field: SerializeField] public Card Prefab { get; private set; }
 
         [field: Title("Behaviour")]
-        [field: SerializeReference] public DamageTypeData DamageType { get; private set; }
         [field: SerializeReference] public TargetSelectionMode TargetingMode { get; private set; }
         [field: SerializeReference] public CardAction Action { get; private set; }
         [field: Header("Status Effects")]

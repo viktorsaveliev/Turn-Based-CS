@@ -15,26 +15,26 @@ namespace Echobay.UISystem
         {
             UpdateHealth(0);
 
-            _damageable.Health.OnTakedDamage += UpdateHealth;
-            _damageable.Health.OnRecoveryHealth += UpdateHealth;
+            _damageable.OnTakedDamage += UpdateHealth;
+            _damageable.OnRecoveryHealth += UpdateHealth;
 
-            _damageable.Health.OnDead += DisableHealth;
+            _damageable.OnDead += DisableHealth;
         }
 
         private void OnDestroy()
         {
-            _damageable.Health.OnTakedDamage -= UpdateHealth;
-            _damageable.Health.OnRecoveryHealth -= UpdateHealth;
+            _damageable.OnTakedDamage -= UpdateHealth;
+            _damageable.OnRecoveryHealth -= UpdateHealth;
 
-            _damageable.Health.OnDead -= DisableHealth;
+            _damageable.OnDead -= DisableHealth;
         }
 
         private void UpdateHealth(int value)
         {
-            float progress = (float) _damageable.Health.Value / _damageable.Health.MaxHealth;
+            float progress = (float) _damageable.CurrentHealth / _damageable.MaxHealth;
             _progressBar.fillAmount = progress;
 
-            _valueText.text = $"{_damageable.Health.Value}";
+            _valueText.text = $"{_damageable.CurrentHealth}";
         }
 
         private void DisableHealth()

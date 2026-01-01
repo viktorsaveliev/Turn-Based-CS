@@ -19,16 +19,22 @@ MonoBehaviour:
   <MoveSpeed>k__BackingField: 3
   <MaxHealth>k__BackingField: 100
   <Prefab>k__BackingField: {fileID: 3287167757744417377, guid: d74ef145fdb9eb745a5951ad853134fd, type: 3}
+  <MoveAnimation>k__BackingField:
+  - _parameterName: Move
+    _type: 2
+    _intValue: 0
+    _floatValue: 1
+    _boolValue: 0
   _cardsList:
   - {fileID: 11400000, guid: 65690a4e340fe094fa5c1f816d0dde9f, type: 2}
   - {fileID: 11400000, guid: a811b3fb3cf3005478a47cd2a40e8b75, type: 2}
   - {fileID: 11400000, guid: 71688a0a9a074d34aadbe61f69419438, type: 2}
-  <Immunity>k__BackingField:
-  - DamageType: {fileID: 11400000, guid: e28300c88438d7c44962ada68996e38d, type: 2}
-    Resistance: 0.5
-  <Vulnerability>k__BackingField:
-  - DamageType: {fileID: 11400000, guid: 7ca8ec8e6bf3c104a90d62da285b908d, type: 2}
-    Resistance: 1.5
+  <DamageModifiers>k__BackingField:
+    Modifiers:
+    - DamageType: {fileID: 11400000, guid: e28300c88438d7c44962ada68996e38d, type: 2}
+      Resistance: 1.5
+    - DamageType: {fileID: 11400000, guid: 124a8909e04576146b83caa108a07d09, type: 2}
+      Resistance: 0.5
   <OnTakeDamageReaction>k__BackingField: []
   <OnDeathReaction>k__BackingField: []
   references:

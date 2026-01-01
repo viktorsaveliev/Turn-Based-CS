@@ -10,6 +10,7 @@ namespace Echobay.ActionContext
             base.Enter(contextLinks);
             contextLinks.Grid.HideGrid();
             contextLinks.CardController.ClearCards();
+            contextLinks.PathView.ClearPath();
         }
 
         public override void Exit()

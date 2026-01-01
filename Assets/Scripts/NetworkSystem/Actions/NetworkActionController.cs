@@ -43,30 +43,9 @@ namespace Echobay.NetworkSystem.Match
         #region Action Request
         private void OnActionRequested(CardData cardData, ExecuteActionContext context)
         {
-            /*if (Runner.IsSinglePlayer)
-            {
-                ProcessActionLocally(context);
-            }
-            else
-            {*/
-                NetworkExecuteActionContext networkContext = ConvertLocalToNetworkContext(cardData, context);
-                RPC_RequestAction(networkContext);
-            //}
+            NetworkExecuteActionContext networkContext = ConvertLocalToNetworkContext(cardData, context);
+            RPC_RequestAction(networkContext);
         }
-
-        /*private void ProcessActionLocally(ExecuteActionContext context)
-        {
-            Unit unit = (Unit)context.Executer;
-
-            if (_server.HandleAction(unit.UnitID, context.TargetCells, context.Action))
-            {
-                _client.ExecuteAction(unit.UnitID, context.TargetCells, context.Action);
-            }
-            else
-            {
-                RPC_ActionRejected(context.Executer, rejectContext);
-            }
-        }*/
 
         [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
         private void RPC_RequestAction(NetworkExecuteActionContext context)
@@ -124,7 +103,8 @@ namespace Echobay.NetworkSystem.Match
             {
                 PlayerRef = unit.Owner.Data.PlayerRef,
                 UnitID = unit.UnitID,
-                CardID = cardID
+                CardID = cardID,
+                CanWorkOnEnemyTurn = context.CanWorkOnEnemyTurn
             };
 
             Vector2Int[] TargetCellPositions = new Vector2Int[context.TargetCells.Count];
@@ -167,9 +147,13 @@ namespace Echobay.NetworkSystem.Match
 
         private void ProcessMoveLocally(int unitId, Vector2Int target)
         {
-            if (_server.HandleMove(unitId, target))
+            if (_server.HandleMove(unitId, target, out NetworkRejectContext rejectContext))
             {
                 _client.ExecuteMove(unitId, target);
+            }
+            else
+            {
+                RPC_ActionRejected(rejectContext.PlayerRef, rejectContext);
             }
         }
 
@@ -178,9 +162,13 @@ namespace Echobay.NetworkSystem.Match
         {
             if (!Object.HasStateAuthority) return;
 
-            if (_server.HandleMove(unitId, target))
+            if (_server.HandleMove(unitId, target, out NetworkRejectContext rejectContext))
             {
                 RPC_ApplyMove(unitId, target);
+            }
+            else
+            {
+                RPC_ActionRejected(rejectContext.PlayerRef, rejectContext);
             }
         }
 
@@ -199,12 +187,15 @@ namespace Echobay.NetworkSystem.Match
         public int UnitID;
         public int TargetsCount;
 
+        public bool CanWorkOnEnemyTurn;
+
         [Networked, Capacity(10)]
         public NetworkArray<Vector2Int> TargetCells => default;
     }
 
     public struct NetworkRejectContext : INetworkStruct
     {
+        public PlayerRef PlayerRef;
         public NetworkString<_32> ReasonText;
     }
 }

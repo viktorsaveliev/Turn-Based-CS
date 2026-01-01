@@ -17,10 +17,15 @@ namespace Echobay.MatchSystem.TurnSystem
     {
         public event Action<MatchPlayer> OnTurnGained;
         public event Action<MatchPlayer> OnTurnLost;
+
+        public event Action<MatchPlayer> OnActivateStartTurnEffects;
+        public event Action<MatchPlayer> OnActivateEndTurnEffects;
+
         public event Action<MatchPlayer, int> OnActionPointsSpended;
 
         public event Action<int> OnRoundStarted;
         public event Action OnTurnEnded;
+        public event Action OnTick;
 
         public int CurrentRound { get; private set; }
         public int TimeRemaining { get; private set; }
@@ -125,6 +130,7 @@ namespace Echobay.MatchSystem.TurnSystem
             var player = CurrentPlayer;
             OnTurnLost?.Invoke(player);
 
+            OnActivateEndTurnEffects?.Invoke(player);
             await ProcessEndTurnEffects(player);
 
             OnTurnEnded?.Invoke();
@@ -140,6 +146,7 @@ namespace Echobay.MatchSystem.TurnSystem
 
             await UniTask.Delay(1000);
 
+            OnActivateStartTurnEffects?.Invoke(CurrentPlayer);
             await ProcessStartTurnEffects(CurrentPlayer);
 
             await UniTask.Delay(1000);
@@ -189,6 +196,8 @@ namespace Echobay.MatchSystem.TurnSystem
                 {
                     await UniTask.Delay(1000, cancellationToken: token);
                     TimeRemaining--;
+
+                    OnTick?.Invoke();
 
                     if (TimeRemaining <= 0)
                     {

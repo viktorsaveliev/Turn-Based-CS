@@ -44,7 +44,7 @@ namespace Echobay.CardSystem
         {
             Unit unit = (Unit)context.Executer;
 
-            PlayAnimation(unit.Animator);
+            unit.PlayAnimation(_animationCommands);
 
             if (_executionDelay > 0)
             {
@@ -62,15 +62,5 @@ namespace Echobay.CardSystem
         }
 
         protected abstract UniTask ExecuteLogic(ExecuteActionContext context);
-
-        private void PlayAnimation(Animator animator)
-        {
-            if (_animationCommands == null || _animationCommands.Length <= 0) return;
-
-            foreach (var animation in _animationCommands)
-            {
-                animation.Apply(animator);
-            }
-        }
     }
 }

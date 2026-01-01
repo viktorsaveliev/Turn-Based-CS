@@ -25,10 +25,6 @@ namespace Echobay.ActionContext
                     Debug.LogError($"occupant not unit {cell.Occupant}");
                 }
             }
-            else
-            {
-                Debug.LogError($"{ContextLinks.ActionController.SelectedUnit} : {cell.IsOccupied}");
-            }
         }
 
         public override string GetDescription()

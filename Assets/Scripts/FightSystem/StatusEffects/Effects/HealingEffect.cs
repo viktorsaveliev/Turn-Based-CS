@@ -10,7 +10,10 @@ namespace Echobay.FightSystem.StatusEffects
         public override async UniTask OnTurnStart(ExecuteStatusEffectContext statusEffectContext)
         {
             ICellOccupant cellOccupant = (ICellOccupant)statusEffectContext.Executer;
-            ExecuteActionContext context = new(Data.Action, cellOccupant, cellOccupant.CurrentCell, healing: Data.Action.Value);
+            ExecuteActionContext context = new(Data.Action, cellOccupant, cellOccupant.CurrentCell, healing: Data.Action.Value)
+            {
+                CanWorkOnEnemyTurn = CanWorkOnEnemyTurn
+            };
 
             await ExecuteAction(context);
             await base.OnTurnStart(statusEffectContext);

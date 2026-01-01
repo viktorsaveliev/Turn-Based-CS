@@ -13,6 +13,8 @@ namespace Echobay.FightSystem.StatusEffects
 
         public StatusEffectData Data { get; private set; }
 
+        [field: SerializeField] public bool CanWorkOnEnemyTurn { get; private set; } = true;
+
         public void Init(StatusEffectData data)
         {
             Data = data;

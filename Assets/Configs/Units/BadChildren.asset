@@ -1,0 +1,61 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 76d5aeadc22c98e4892102e8f80c6015, type: 3}
+  m_Name: BadChildren
+  m_EditorClassIdentifier: 
+  <Icon>k__BackingField: {fileID: 0}
+  <Name>k__BackingField: 
+  <Description>k__BackingField: 
+  <MoveMaxDistance>k__BackingField: 3
+  <MoveSpeed>k__BackingField: 3
+  <MaxHealth>k__BackingField: 100
+  <Prefab>k__BackingField: {fileID: 0}
+  <MoveAnimation>k__BackingField: []
+  _cardsList: []
+  <DamageModifiers>k__BackingField:
+    Modifiers: []
+  <OnTakeDamageReaction>k__BackingField: []
+  <OnDeathReaction>k__BackingField: []
+  <VisualProfile>k__BackingField:
+    Gender: 1
+    Slots:
+    - Slot: 1
+      Enabled: 1
+      Randomize: 1
+      FixedElement: {fileID: 0}
+    - Slot: 2
+      Enabled: 1
+      Randomize: 1
+      FixedElement: {fileID: 0}
+    - Slot: 3
+      Enabled: 1
+      Randomize: 1
+      FixedElement: {fileID: 0}
+    - Slot: 4
+      Enabled: 1
+      Randomize: 1
+      FixedElement: {fileID: 0}
+    - Slot: 5
+      Enabled: 1
+      Randomize: 1
+      FixedElement: {fileID: 0}
+    - Slot: 0
+      Enabled: 0
+      Randomize: 1
+      FixedElement: {fileID: 0}
+    - Slot: 6
+      Enabled: 1
+      Randomize: 1
+      FixedElement: {fileID: 0}
+  references:
+    version: 2
+    RefIds: []

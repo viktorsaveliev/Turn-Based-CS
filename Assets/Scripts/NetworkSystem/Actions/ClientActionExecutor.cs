@@ -51,11 +51,14 @@ namespace Echobay.NetworkSystem.Match
 
         public void ExecuteMove(int unitId, Vector2Int targetCellPosition)
         {
-            if (!TryGetUnit(unitId, out Unit unit))
-                return;
+            if (!TryGetUnit(unitId, out Unit unit)) return;
 
-            if (!_grid.TryGetCellByPosition(targetCellPosition, out GridCell cell))
-                return;
+            if (!_grid.TryGetCellByPosition(targetCellPosition, out GridCell cell)) return;
+
+            RunOnLocalOwnedUnit(unit, () =>
+            {
+                _actionController.BlockActions();
+            });
 
             MoveAction action = new(_pathFinder);
 
@@ -78,6 +81,11 @@ namespace Echobay.NetworkSystem.Match
         {
             if (!TryGetUnit(unitId, out Unit unit)) return;
 
+            RunOnLocalOwnedUnit(unit, () =>
+            {
+                _actionController.BlockActions();
+            });
+
             ExecuteActionContext context = new(cardData.Action, unit, cells);
             CardAction cardAction = cardData.Action;
 
@@ -88,14 +96,6 @@ namespace Echobay.NetworkSystem.Match
             RunOnLocalOwnedUnit(unit, () =>
             {
                 _actionController.ActionExecuted(context);
-                /*void OnCompleted(ExecuteActionContext context)
-                {
-                    Debug.Log("1");
-                    action.OnActionExecuted -= OnCompleted;
-                    _actionController.ActionExecuted(context);
-                }
-
-                action.OnActionExecuted += OnCompleted;*/
             });
         }
 
@@ -140,7 +140,7 @@ namespace Echobay.NetworkSystem.Match
         private void RunOnLocalOwnedUnit(Unit unit, Action callback)
         {
             MatchPlayer localPlayer = _networkMatchController.LocalPlayer;
-            if (localPlayer == unit.Owner) //  && localPlayer.ActionPoints > 0
+            if (localPlayer == unit.Owner && localPlayer.ActionPoints > 0) //  
             {
                 callback?.Invoke();
             }

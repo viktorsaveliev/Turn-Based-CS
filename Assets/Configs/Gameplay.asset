@@ -19,3 +19,4 @@ MonoBehaviour:
   <MatchStartDelayInSeconds>k__BackingField: 3
   <StandardTurnPointsPerRound>k__BackingField: 3
   <TimePerTurnInSeconds>k__BackingField: 30
+  <SpendPointsForMovement>k__BackingField: 1
